@@ -1,0 +1,195 @@
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  padding-top: 18px;
+  pointer-events: none;
+}
+.nav__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+  pointer-events: auto;
+}
+.nav__bar::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(var(--gutter) - 14px);
+  z-index: -1;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  transition: background var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out),
+    backdrop-filter var(--dur-base);
+}
+.nav.is-scrolled .nav__bar::before {
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+.nav--dark.is-scrolled .nav__bar::before {
+  background: rgba(var(--sr-night-rgb), 0.62);
+  box-shadow: inset 0 0 0 1px var(--line-dark);
+}
+.nav--light.is-scrolled .nav__bar::before {
+  background: rgba(255, 252, 244, 0.78);
+  box-shadow: inset 0 0 0 1px var(--line-light);
+}
+
+.nav__brand {
+  display: inline-flex;
+  opacity: 0;
+}
+.nav.is-ready .nav__brand {
+  opacity: 1;
+}
+.nav__brand .wordmark {
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(16px, 2.4vw, 36px);
+  margin-inline: auto;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.8s var(--ease-out) 0.25s, transform 0.8s var(--ease-out) 0.25s, color var(--dur-base);
+}
+.nav__links a {
+  position: relative;
+  padding: 6px 0;
+}
+.nav__links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--sr-orange);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.nav__links a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.nav--dark .nav__links {
+  color: rgba(var(--sr-white-rgb), 0.82);
+}
+.nav--light .nav__links {
+  color: var(--sr-night);
+}
+
+.nav__cta {
+  height: 46px;
+  padding-left: 20px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out) 0.35s, color var(--dur-base) var(--ease-out);
+}
+.nav__cta {
+  --dot: 36px;
+}
+.nav.is-ready .nav__links,
+.nav.is-ready .nav__cta {
+  opacity: 1;
+  transform: none;
+}
+
+.nav__burger {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--sr-orange);
+}
+.nav__burger span[aria-hidden] {
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  height: 2px;
+  background: var(--sr-night);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.nav__burger span[aria-hidden]:nth-of-type(2) {
+  top: 18px;
+}
+.nav__burger span[aria-hidden]:nth-of-type(3) {
+  top: 24px;
+}
+.nav.is-open .nav__burger span[aria-hidden]:nth-of-type(2) {
+  transform: translateY(3px) rotate(45deg);
+}
+.nav.is-open .nav__burger span[aria-hidden]:nth-of-type(3) {
+  transform: translateY(-3px) rotate(-45deg);
+}
+
+.nav__sheet {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 40px;
+  padding: 120px var(--gutter) 48px;
+  background: var(--sr-night);
+  pointer-events: auto;
+}
+.nav__sheet[hidden] {
+  display: none;
+}
+.nav__sheet nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nav__sheet nav a {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 10vw, 3.4rem);
+  letter-spacing: -0.04em;
+  color: var(--sr-white);
+  animation: sheet-in 0.7s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 50ms);
+}
+.nav__sheet nav a:hover {
+  color: var(--sr-orange);
+}
+.nav__sheet .btn {
+  align-self: flex-start;
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (max-width: 1080px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__cta {
+    margin-left: auto;
+  }
+  .nav__burger {
+    display: block;
+    margin-left: 0;
+  }
+}
+@media (max-width: 680px) {
+  .nav__cta {
+    display: none;
+  }
+  .nav__burger {
+    margin-left: auto;
+  }
+}

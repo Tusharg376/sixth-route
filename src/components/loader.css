@@ -1,0 +1,78 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.ld-curtain {
+  position: absolute;
+  inset: 0;
+  background: var(--sr-night);
+  overflow: hidden;
+}
+.ld-ember {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--sr-orange-rgb), 0.26), rgba(var(--sr-orange-rgb), 0));
+}
+.ld-ember--a {
+  right: -32vmax;
+  top: -36vmax;
+}
+.ld-ember--b {
+  left: -34vmax;
+  bottom: -38vmax;
+}
+
+.ld-lockup {
+  position: fixed;
+  z-index: 2;
+  margin: 0;
+  will-change: transform;
+}
+.ld-mark {
+  overflow: visible;
+}
+.ld-ribbons path {
+  opacity: 0;
+}
+.ld-glow {
+  fill: var(--sr-orange);
+  opacity: 0;
+  filter: blur(9px);
+}
+.ld-clip {
+  display: inline-flex;
+  overflow: hidden;
+  padding-block: 0.12em;
+  margin-block: -0.12em;
+}
+.ld-ch {
+  display: inline-block;
+}
+
+.ld-tagline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + min(12vw, 120px));
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1.1vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--muted-dark);
+  opacity: 0;
+}
+
+.ld-skip {
+  position: absolute;
+  right: var(--gutter);
+  top: clamp(24px, 4vh, 36px);
+  font-size: 0.75rem;
+  color: rgba(var(--sr-white-rgb), 0.3);
+}
+

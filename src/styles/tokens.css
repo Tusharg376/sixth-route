@@ -1,0 +1,43 @@
+/* Sixth Route design tokens — see design.md. Five colours only; tints are opacity of these. */
+:root {
+  --sr-orange: #ff8221;
+  --sr-maroon: #420d0f;
+  --sr-cream: #fffcf4;
+  --sr-night: #140101;
+  --sr-white: #feffff;
+
+  --sr-orange-rgb: 255, 130, 33;
+  --sr-maroon-rgb: 66, 13, 15;
+  --sr-night-rgb: 20, 1, 1;
+  --sr-white-rgb: 254, 255, 255;
+
+  --line-light: rgba(var(--sr-maroon-rgb), 0.12);
+  --muted-light: rgba(var(--sr-night-rgb), 0.62);
+  --line-dark: rgba(var(--sr-white-rgb), 0.1);
+  --muted-dark: rgba(var(--sr-white-rgb), 0.58);
+
+  --font-display: "Montserrat", system-ui, sans-serif;
+  --font-body: "Urbanist", system-ui, sans-serif;
+
+  --fs-display: clamp(2.9rem, 7.2vw, 7.6rem);
+  --fs-h2: clamp(2.3rem, 4.8vw, 4.6rem);
+  --fs-h3: clamp(1.25rem, 1.7vw, 1.6rem);
+  --fs-lead: clamp(1.15rem, 1.5vw, 1.4rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.875rem;
+  --fs-eyebrow: 0.72rem;
+
+  --radius-sm: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --maxw: 1320px;
+  --gutter: clamp(20px, 4vw, 56px);
+  --section-y: clamp(96px, 12vw, 180px);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 240ms;
+  --dur-base: 600ms;
+  --dur-slow: 1200ms;
+}

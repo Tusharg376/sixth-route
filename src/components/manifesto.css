@@ -1,0 +1,194 @@
+/* Manifesto as a pinned sequence of reroutes (Figma "Writing" copy). */
+.mf2 {
+  position: relative;
+  height: calc(var(--beats) * 72vh + 100vh);
+  background: var(--sr-night);
+  color: var(--sr-white);
+}
+.mf2__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(60vmax 60vmax at 100% 0%, rgba(var(--sr-orange-rgb), 0.16), rgba(var(--sr-orange-rgb), 0) 70%),
+    radial-gradient(50vmax 50vmax at 0% 100%, rgba(var(--sr-orange-rgb), 0.12), rgba(var(--sr-orange-rgb), 0) 70%);
+}
+.mf2__stage {
+  position: relative;
+  height: 100%;
+}
+
+.mf-top {
+  position: absolute;
+  inset: clamp(110px, 15vh, 150px) var(--gutter) auto;
+  display: grid;
+  gap: 18px;
+}
+.mf-eyebrow {
+  color: var(--muted-dark);
+}
+.mf-q {
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.8vw, 2.6rem);
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.mf-q span {
+  display: inline-block;
+}
+.mf-count {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  color: var(--muted-dark);
+}
+.mf-count b {
+  color: var(--sr-orange);
+  font-weight: 700;
+}
+
+.mf-pairs {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 42%;
+}
+.mf-pair {
+  position: absolute;
+  inset: 0 0 auto;
+}
+.mf-verb {
+  display: block;
+  margin-bottom: 0.4em;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  letter-spacing: -0.01em;
+  color: var(--muted-dark);
+}
+.mf-from,
+.mf-to {
+  display: block;
+  width: fit-content;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.8rem, 8.6vw, 9rem);
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+  white-space: nowrap;
+}
+.mf-from {
+  color: var(--sr-cream);
+}
+.mf-to {
+  margin-left: clamp(40px, 24vw, 420px);
+}
+
+.mf-finale {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 26%;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+.mf-future {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 4rem);
+  letter-spacing: -0.04em;
+  color: var(--sr-cream);
+}
+.mf-create {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 7.2vw, 7.4rem);
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+.mf-closers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: clamp(28px, 4vh, 48px);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  color: var(--muted-dark);
+}
+.mf-closers span::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: var(--sr-orange);
+  vertical-align: 0.15em;
+}
+.mf-welcome {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  letter-spacing: -0.02em;
+}
+
+.mf-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.mf-line {
+  fill: none;
+  stroke: var(--sr-orange);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(255, 130, 33, 0.45));
+}
+
+/* Reduced motion: the manifesto as plain lines. */
+.mf2--static {
+  height: auto;
+  padding-block: var(--section-y);
+}
+.mf2--static p {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 3.4vw, 3rem);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+@media (max-width: 760px) {
+  .mf2 {
+    height: calc(var(--beats) * 64vh + 100vh);
+  }
+  .mf-pairs {
+    top: 44%;
+  }
+  .mf-from,
+  .mf-to {
+    font-size: clamp(2rem, 10.2vw, 4rem);
+  }
+  .mf-to {
+    margin-left: 10vw;
+  }
+  .mf-line {
+    stroke-width: 3;
+  }
+  .mf-finale {
+    top: 24%;
+  }
+}

@@ -1,0 +1,119 @@
+.footer {
+  position: relative;
+  overflow: hidden;
+  background: var(--sr-night);
+  color: var(--sr-white);
+  padding-top: clamp(48px, 6vw, 80px);
+  border-top: 1px solid var(--line-dark);
+}
+.footer__top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding-bottom: clamp(40px, 5vw, 64px);
+  border-bottom: 1px solid var(--line-dark);
+}
+.footer__brand {
+  display: grid;
+  gap: 18px;
+  max-width: 44ch;
+}
+.footer__brand .lockup {
+  font-size: 22px;
+}
+.footer__brand p {
+  color: var(--muted-dark);
+  font-size: 0.95rem;
+}
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px;
+  padding-block: clamp(40px, 5vw, 64px);
+}
+.footer__h {
+  margin-bottom: 18px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--muted-dark);
+}
+.footer__col ul {
+  display: grid;
+  gap: 11px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer__col a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: var(--sr-white);
+  transition: color var(--dur-fast);
+}
+.footer__col a:hover {
+  color: var(--sr-orange);
+}
+
+.footer__legal {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding-block: 22px;
+  border-top: 1px solid var(--line-dark);
+  font-size: 0.85rem;
+  color: var(--muted-dark);
+}
+.footer__legal a:hover {
+  color: var(--sr-orange);
+}
+.footer__tag {
+  font-family: var(--font-display);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+/* Giant wordmark rising from the bottom edge. */
+.footer__giant {
+  position: relative;
+  padding-inline: clamp(12px, 2vw, 28px);
+  margin-top: clamp(8px, 2vw, 24px);
+  overflow: hidden;
+  line-height: 0.74;
+}
+.footer__word {
+  display: inline-flex;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+  padding-bottom: 0.02em;
+  background: linear-gradient(180deg, var(--sr-orange) 8%, rgba(var(--sr-orange-rgb), 0.55) 48%, rgba(var(--sr-orange-rgb), 0) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: transform;
+}
+.footer__word b {
+  font-weight: 800;
+}
+.footer__word i {
+  font-style: normal;
+  font-weight: 300;
+}
+
+@media (max-width: 960px) {
+  .footer__cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .footer__cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

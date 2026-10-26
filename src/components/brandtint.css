@@ -1,0 +1,27 @@
+.tint {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  mix-blend-mode: screen;
+  opacity: var(--tint-strength, 1);
+  pointer-events: none;
+}
+.tint__fx {
+  position: absolute;
+  inset: 0;
+  filter: grayscale(1) contrast(1.35) brightness(1.15);
+}
+.tint__fx > *,
+.tint__fx canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.tint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sr-orange);
+  mix-blend-mode: multiply;
+}

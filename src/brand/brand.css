@@ -1,0 +1,38 @@
+.wordmark {
+  display: inline-flex;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.wordmark__a {
+  font-weight: 800;
+}
+.wordmark__b {
+  font-weight: 300;
+}
+/* On night: white + white. On cream: maroon + maroon. Poster: orange + white. */
+.wordmark--dark {
+  color: var(--sr-white);
+}
+.wordmark--light {
+  color: var(--sr-maroon);
+}
+.wordmark--poster .wordmark__a {
+  color: var(--sr-orange);
+  font-weight: 700;
+}
+.wordmark--poster .wordmark__b {
+  color: var(--sr-white);
+}
+
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 18px;
+}
+.lockup__mark {
+  flex: none;
+}

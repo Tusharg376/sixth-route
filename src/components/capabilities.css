@@ -1,0 +1,193 @@
+.caps {
+  background: var(--sr-cream);
+  padding-block: var(--section-y);
+}
+.caps__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 110px);
+  align-items: center;
+}
+
+/* The dial: the brand circle in eight segments, around the mark. */
+.dial {
+  width: min(100%, 600px);
+  justify-self: center;
+}
+.dial svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dial__ring {
+  transition: transform 1.1s var(--ease-inout);
+}
+.dial__seg {
+  cursor: pointer;
+  color: var(--sr-cream);
+  transition: transform 0.7s var(--ease-out);
+}
+.dial__seg path {
+  fill: var(--sr-maroon);
+  transition: fill 0.5s var(--ease-out);
+}
+.dial__seg:hover path {
+  fill: #5a1a1c;
+}
+.dial__seg.is-active path {
+  fill: var(--sr-orange);
+}
+.dial__seg.is-active {
+  color: var(--sr-night);
+  /* Icon's orange parts would vanish on the orange segment. */
+  --icon-accent: var(--sr-cream);
+}
+.dial__icon {
+  transition: transform 1.1s var(--ease-inout);
+}
+.dial__hub {
+  fill: var(--sr-cream);
+  stroke: var(--line-light);
+  stroke-width: 0.4;
+}
+.dial__track {
+  fill: none;
+  stroke: var(--line-light);
+  stroke-width: 0.5;
+}
+.dial__timer {
+  fill: none;
+  stroke: var(--sr-orange);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transform: rotate(-90deg);
+  opacity: 0;
+}
+.caps.is-auto .dial__timer {
+  opacity: 1;
+  animation: dial-timer var(--ms) linear forwards;
+}
+@keyframes dial-timer {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.dial__notch {
+  fill: var(--sr-orange);
+}
+.dial__route {
+  stroke: var(--sr-orange);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+}
+
+/* The panel: active discipline + a legend of all eight. */
+.caps__panel {
+  display: grid;
+  gap: clamp(32px, 4vw, 48px);
+}
+.caps__detail {
+  display: grid;
+  gap: 16px;
+  min-height: 300px;
+  align-content: start;
+  animation: caps-in 0.7s var(--ease-out);
+}
+@keyframes caps-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+.caps__count {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  color: var(--muted-light);
+}
+.caps__count b {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: var(--sr-orange);
+}
+.caps__detail h3 {
+  font-size: clamp(2.1rem, 3.8vw, 3.6rem);
+  letter-spacing: -0.045em;
+  line-height: 1;
+  text-wrap: balance;
+}
+.caps__body {
+  max-width: 40ch;
+  font-size: var(--fs-lead);
+  color: var(--muted-light);
+}
+.caps__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.caps__chips li {
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--sr-night);
+  color: var(--sr-cream);
+  font-size: 0.85rem;
+}
+.caps__chips li::first-letter {
+  text-transform: uppercase;
+}
+
+.caps__legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-light);
+}
+.caps__legend button {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  text-align: left;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--muted-light);
+  transition: color var(--dur-fast);
+}
+.caps__legend button span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sr-orange);
+}
+.caps__legend button:hover,
+.caps__legend button.is-active {
+  color: var(--sr-night);
+}
+.caps__legend button.is-active {
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .caps__stage {
+    grid-template-columns: 1fr;
+  }
+  .dial {
+    width: min(100%, 420px);
+  }
+  .caps__detail {
+    min-height: 0;
+  }
+}
+@media (max-width: 560px) {
+  .caps__legend {
+    grid-template-columns: 1fr;
+  }
+}

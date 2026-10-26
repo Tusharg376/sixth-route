@@ -1,0 +1,165 @@
+/* Staircase of sticky cards (pattern from marketinglab.framer.ai "Our Process"):
+   each column starts one card-height lower; every card sticks at the same line,
+   so they rise one by one and lock into a row, then leave together. */
+.process {
+  background: var(--sr-night);
+  color: var(--sr-white);
+  padding-block: clamp(80px, 10vw, 140px) var(--section-y);
+}
+.process__stage {
+  --stick: 320px;
+  --card-h: clamp(380px, calc(100vh - var(--stick) - 28px), 470px);
+  --hold: 38vh;
+  position: relative;
+}
+.process__rail {
+  position: absolute;
+  inset: 0 var(--gutter) calc(var(--card-h) + 20px);
+}
+.process__head {
+  position: sticky;
+  top: 96px;
+  margin-bottom: 0;
+  padding-bottom: 20px;
+}
+.process__head .eyebrow {
+  color: var(--muted-dark);
+}
+.process__track {
+  position: relative;
+  padding-top: calc(var(--stick) - 96px) !important;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.process__col {
+  padding-top: calc(var(--i) * var(--card-h));
+}
+/* Hold space lives in the content box (sticky ignores padding) so all four rest in a row. */
+.process__col::after {
+  content: "";
+  display: block;
+  height: var(--hold);
+}
+.pcard {
+  position: sticky;
+  top: var(--stick);
+  height: var(--card-h);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(20px, 2vw, 28px);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 80% at 80% 0%, rgba(255, 252, 244, 0.22), rgba(255, 252, 244, 0) 60%),
+    radial-gradient(90% 70% at 0% 100%, rgba(var(--sr-maroon-rgb), 0.35), rgba(var(--sr-maroon-rgb), 0) 70%),
+    var(--sr-orange);
+  color: var(--sr-night);
+  overflow: hidden;
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.25);
+}
+.pcard__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3.6rem, 6vw, 6rem);
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+  color: var(--sr-cream);
+}
+.pcard__text h3 {
+  font-size: var(--fs-h3);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.pcard__text p {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--sr-maroon);
+}
+
+.step-art {
+  align-self: center;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  overflow: visible;
+}
+.sa-draw {
+  fill: none;
+  stroke: var(--sr-maroon);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-inout) 0.2s;
+}
+circle.sa-draw {
+  stroke-dasharray: 0.04 0.03;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.4);
+  transition: opacity 0.8s var(--ease-out) 0.3s, transform 1s var(--ease-out) 0.3s;
+}
+.sa-dash {
+  stroke-width: 1.8;
+}
+.sa-route {
+  stroke-width: 5;
+}
+.sa-dot {
+  fill: var(--sr-cream);
+  stroke: var(--sr-maroon);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  transition: transform 0.6s var(--ease-out) var(--d);
+}
+.sa-dot.is-on {
+  fill: var(--sr-maroon);
+}
+.pcard.is-in .sa-draw {
+  stroke-dashoffset: 0;
+}
+.pcard.is-in circle.sa-draw {
+  opacity: 1;
+  transform: none;
+}
+.pcard.is-in .sa-dot {
+  transform: none;
+}
+
+@media (max-width: 960px) {
+  .process__rail {
+    position: static;
+  }
+  .process__head {
+    position: static;
+    margin-bottom: 40px;
+  }
+  .process__track {
+    padding-top: 0 !important;
+  }
+  .process__track {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .process__col {
+    padding: 0;
+  }
+  .process__col::after {
+    display: none;
+  }
+  .pcard {
+    position: relative;
+    top: 0;
+    height: auto;
+    min-height: 400px;
+  }
+}

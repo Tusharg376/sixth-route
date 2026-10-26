@@ -1,0 +1,105 @@
+.mascot {
+  overflow: visible;
+}
+.mascot__shadow {
+  fill: rgba(0, 0, 0, 0.45);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mascot-shadow 3.2s var(--ease-inout) infinite;
+}
+.mascot__body {
+  animation: mascot-bob 3.2s var(--ease-inout) infinite;
+}
+.mascot__feet ellipse {
+  fill: var(--sr-maroon);
+}
+.mascot__eye {
+  transform-box: view-box;
+  animation: mascot-blink 4.6s infinite;
+}
+.mascot__eye circle:last-child {
+  transition: transform 0.12s linear;
+}
+.mascot__mouth--o {
+  fill: var(--sr-maroon);
+}
+.mascot__mouth--smile {
+  fill: none;
+  stroke: var(--sr-maroon);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  opacity: 0;
+}
+.mascot__cheek {
+  fill: var(--sr-cream);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+}
+.mascot__q path {
+  fill: none;
+  stroke: var(--sr-orange);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 4 5;
+  animation: mascot-march 1.4s linear infinite;
+  transition: opacity 0.4s var(--ease-out);
+}
+.mascot__qdot {
+  fill: var(--sr-orange);
+  animation: mascot-bob 3.2s var(--ease-inout) infinite;
+  transition: opacity 0.4s var(--ease-out);
+}
+
+/* Found the way home: smile, blush, the question mark goes. */
+.mascot.is-happy .mascot__mouth--o {
+  opacity: 0;
+}
+.mascot.is-happy .mascot__mouth--smile {
+  opacity: 1;
+}
+.mascot.is-happy .mascot__cheek {
+  opacity: 0.35;
+}
+.mascot.is-happy .mascot__q path,
+.mascot.is-happy .mascot__qdot {
+  opacity: 0;
+}
+.mascot.is-happy .mascot__body {
+  animation: mascot-hop 0.7s var(--ease-out) infinite;
+}
+
+@keyframes mascot-bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes mascot-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-12px);
+  }
+}
+@keyframes mascot-shadow {
+  50% {
+    transform: scaleX(0.82);
+    opacity: 0.6;
+  }
+}
+@keyframes mascot-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes mascot-march {
+  to {
+    stroke-dashoffset: -18;
+  }
+}

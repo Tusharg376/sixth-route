@@ -1,0 +1,107 @@
+.nf {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--sr-night);
+  color: var(--sr-white);
+  padding-block: 120px 64px;
+}
+.nf__ember {
+  position: absolute;
+  z-index: -1;
+  width: 80vmax;
+  height: 80vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--sr-orange-rgb), 0.24), rgba(var(--sr-orange-rgb), 0));
+}
+.nf__ember--a {
+  right: -40vmax;
+  top: -44vmax;
+}
+.nf__ember--b {
+  left: -42vmax;
+  bottom: -48vmax;
+}
+.nf__inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+.nf__code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.04em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(7rem, 34vw, 19rem);
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+  color: var(--sr-cream);
+  animation: nf-in 1s var(--ease-out) both;
+}
+.nf__mascot {
+  width: 0.86em;
+  height: auto;
+  margin: -0.2em 0.02em 0;
+}
+.nf__title {
+  margin-top: clamp(28px, 4vw, 48px);
+  font-size: clamp(1.9rem, 4vw, 3.4rem);
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  animation: nf-in 1s var(--ease-out) 0.12s both;
+}
+.nf__body {
+  margin-top: 18px;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  color: var(--muted-dark);
+  animation: nf-in 1s var(--ease-out) 0.2s both;
+}
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 36px;
+  animation: nf-in 1s var(--ease-out) 0.28s both;
+}
+.nf__routes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 22px;
+  margin-top: 44px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line-dark);
+  font-size: 0.95rem;
+  animation: nf-in 1s var(--ease-out) 0.36s both;
+}
+.nf__routes span {
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-dark);
+}
+.nf__routes a {
+  color: var(--sr-white);
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.nf__routes a:hover {
+  color: var(--sr-orange);
+  border-color: var(--sr-orange);
+}
+@keyframes nf-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
