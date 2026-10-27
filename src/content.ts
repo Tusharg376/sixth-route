@@ -177,7 +177,7 @@ export const PROJECTS_HEAD = {
 };
 
 export const WHY = {
-  eyebrow: "Why Sixthroute",
+  eyebrow: "The Sixthroute difference",
   headline: ["Less juggling.", "More connected thinking."],
   body:
     "Sixthroute brings diverse expertise into one coordinated process, connecting strategy with execution while adapting the team and approach to each project's needs.",

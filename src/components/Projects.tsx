@@ -102,7 +102,6 @@ export function Projects() {
           <span className="work__bar">
             <span ref={bar} />
           </span>
-          <span className="work__hint">Scroll to explore · Tap + for the story</span>
         </div>
       </div>
 

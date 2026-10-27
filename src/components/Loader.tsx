@@ -60,50 +60,62 @@ export function Loader({ onDone }: { onDone: () => void }) {
       gsap.set(q(".ld-ch"), { yPercent: 115 });
       gsap.set(q(".ld-final"), { opacity: 0 });
 
-      // Ribbons enter just outside the bottom corners of *this* screen: convert the corners to the
-      // mark's viewBox units (screen centre = mark centre = 50,50 at the start scale).
+      // Each ribbon is anchored to a screen edge and unrolls from it: the 6 from the left edge,
+      // the circle from the bottom edge. Edges are converted to the mark's viewBox units
+      // (screen centre = mark centre = 50,50 at the start scale).
       const unit = (m.width * sA) / 100;
-      const off = 30;
-      const corner = (sx: number): [number, number] => [50 + (sx * (vw / 2 + off)) / unit, 50 + (vh / 2 + off) / unit];
-      const shapes = { route: routeRibbon(corner(-1)), coil: coilRibbon(corner(1)) };
+      const off = 24;
+      const leftEdge: [number, number] = [50 - (vw / 2 + off) / unit, 50 + (vh * 0.16) / unit];
+      const bottomEdge: [number, number] = [50 + (vw * 0.18) / unit, 50 + (vh / 2 + off) / unit];
+      const shapes = { route: routeRibbon(leftEdge), coil: coilRibbon(bottomEdge) };
       const setD = (sel: string, d: string) => el.querySelectorAll(sel).forEach((p) => p.setAttribute("d", d));
       setD(".ld-rib-route", shapes.route.full);
       setD(".ld-m-route-lead", shapes.route.lead);
       setD(".ld-rib-coil", shapes.coil.full);
       setD(".ld-m-coil-lead", shapes.coil.lead);
 
-      // A ribbon of fixed length (the shape's own length) slides along lead-in + shape and
-      // comes to rest exactly on the shape: dash offset runs from +shape (hidden) to -lead.
+      // The visible stretch of a ribbon is [tail, head] along lead-in + shape. The head runs out to
+      // the end of the shape while the tail stays pinned at the screen edge; only once the shape
+      // is drawn does the tail let go and slide in, leaving the ribbon resting exactly on the shape.
       const ribbon = (sel: string, measure: string) => {
-        const lead = el.querySelector<SVGPathElement>(`${measure}-lead`)!;
-        const main = el.querySelector<SVGPathElement>(`${measure}-main`)!;
-        const L = lead.getTotalLength();
-        const M = main.getTotalLength();
+        const L = el.querySelector<SVGPathElement>(`${measure}-lead`)!.getTotalLength();
+        const M = el.querySelector<SVGPathElement>(`${measure}-main`)!.getTotalLength();
         const paths = Array.from(el.querySelectorAll<SVGPathElement>(sel));
-        gsap.set(paths, { strokeDasharray: `${M} ${L + M + 10}`, strokeDashoffset: M, opacity: 1 });
-        return { paths, to: -L };
+        const span = { tail: 0, head: 0 };
+        const apply = () => {
+          const t = Math.min(span.tail, span.head);
+          gsap.set(paths, { strokeDasharray: `0 ${t} ${Math.max(span.head - t, 0.001)} ${L + M + 10}` });
+        };
+        gsap.set(paths, { strokeDashoffset: 0, opacity: 1 });
+        apply();
+        return { span, apply, L, total: L + M };
       };
       const route = ribbon(".ld-rib-route", ".ld-m-route");
       const coil = ribbon(".ld-rib-coil", ".ld-m-coil");
 
       const tl = gsap.timeline({ onComplete: finish });
-      tl.to(route.paths, { strokeDashoffset: route.to, duration: 1.5, ease: "power2.inOut" }, 0.1)
-        .to(coil.paths, { strokeDashoffset: coil.to, duration: 1.5, ease: "power2.inOut" }, 1.0)
+      tl.to(route.span, { head: route.total, duration: 1.4, ease: "power2.inOut", onUpdate: route.apply }, 0.1)
+        .to(route.span, { tail: route.L, duration: 0.9, ease: "power2.inOut", onUpdate: route.apply }, 0.95)
+        .to(coil.span, { head: coil.total, duration: 1.45, ease: "power2.inOut", onUpdate: coil.apply }, 1.0)
+        .to(coil.span, { tail: coil.L, duration: 0.8, ease: "power2.inOut", onUpdate: coil.apply }, 1.8)
         .to(q(".ld-rib-route.is-base"), { stroke: "#420D0F", duration: 0.7, ease: "power1.inOut" }, 1.75)
         .to(q(".ld-rib-shine"), { opacity: 0, duration: 0.5 }, 1.9)
-        // The exact mark takes over from the ribbons.
-        .to(q(".ld-final"), { opacity: 1, duration: 0.35, ease: "power1.out" }, 2.5)
-        .set(q(".ld-ribbons"), { opacity: 0 }, 2.9)
-        .fromTo(q(".ld-glow"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 2.75)
+        // Settle: a circular clip tucks the ribbon ends (and the coil's start cap) into the
+        // circle, then the exact mark crossfades in as the ribbons fade out — no bumps, no swap.
+        .set(q(".ld-ribclip"), { attr: { r: 72 } }, 2.55) // only now: until here the ribbons run to the screen edge
+        .to(q(".ld-ribclip"), { attr: { r: 50 }, duration: 0.3, ease: "power2.out" }, 2.55)
+        .to(q(".ld-final"), { opacity: 1, duration: 0.34, ease: "power1.inOut" }, 2.66)
+        .to(q(".ld-ribbons"), { opacity: 0, duration: 0.34, ease: "power1.inOut" }, 2.7)
+        .fromTo(q(".ld-glow"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 2.85)
         // Centre the full lockup and raise the wordmark.
-        .to(lk, { ...at(r.width / 2, r.height / 2, sB), duration: 0.9, ease: "expo.inOut" }, 3.0)
-        .to(q(".ld-ch"), { yPercent: 0, duration: 0.7, stagger: 0.035, ease: "expo.out" }, 3.35)
-        .fromTo(q(".ld-tagline"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.6)
-        // Fly into the nav and lift the curtain.
-        .to(q(".ld-tagline"), { opacity: 0, duration: 0.35 }, 4.35)
-        .to(lk, { x: 0, y: 0, scale: 1, duration: 1.1, ease: "expo.inOut" }, 4.4)
-        .to(q(".ld-glow"), { opacity: 0, duration: 0.6 }, 4.65)
-        .to(q(".ld-curtain"), { yPercent: -100, duration: 1.05, ease: "expo.inOut" }, 4.55);
+        .to(lk, { ...at(r.width / 2, r.height / 2, sB), duration: 0.9, ease: "expo.inOut" }, 3.1)
+        .to(q(".ld-ch"), { yPercent: 0, duration: 0.7, stagger: 0.035, ease: "expo.out" }, 3.45)
+        .fromTo(q(".ld-tagline"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.7)
+        // Fly into the nav while the curtain dissolves (a fade has no hard edge to sweep across).
+        .to(q(".ld-tagline"), { opacity: 0, duration: 0.35 }, 4.45)
+        .to(lk, { x: 0, y: 0, scale: 1, duration: 1.1, ease: "expo.inOut" }, 4.5)
+        .to(q(".ld-glow"), { opacity: 0, duration: 0.6 }, 4.75)
+        .to(q(".ld-curtain"), { opacity: 0, duration: 0.95, ease: "power2.inOut" }, 4.7);
 
       const skipIntro = () => tl.progress(1);
       el.addEventListener("click", skipIntro);
@@ -134,6 +146,9 @@ export function Loader({ onDone }: { onDone: () => void }) {
             <clipPath id={clip}>
               <circle cx="50" cy="50" r="50" />
             </clipPath>
+            <clipPath id={`${clip}-rib`}>
+              <circle className="ld-ribclip" cx="50" cy="50" r="5000" />
+            </clipPath>
             {/* Measuring paths: lengths of each lead-in and of the shape it settles on. */}
             <path className="ld-m-route-lead" d={ROUTE_RIBBON.lead} />
             <path className="ld-m-route-main" d={ROUTE_RIBBON.main} />
@@ -142,7 +157,7 @@ export function Loader({ onDone }: { onDone: () => void }) {
           </defs>
           <circle className="ld-glow" cx="50" cy="50" r="50" />
 
-          <g className="ld-ribbons" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <g className="ld-ribbons" fill="none" strokeLinecap="round" strokeLinejoin="round" clipPath={`url(#${clip}-rib)`}>
             {/* Circle ribbon sits behind the 6. */}
             <path className="ld-rib-coil is-base" d={COIL_RIBBON.full} stroke="var(--sr-orange)" strokeWidth={COIL_RIBBON.width} />
             <path className="ld-rib-coil ld-rib-shine" d={COIL_RIBBON.full} stroke="rgba(255,252,244,.28)" strokeWidth={1.6} />

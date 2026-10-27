@@ -27,21 +27,27 @@ function NameStory() {
     const q = gsap.utils.selector(el);
     if (prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
-      gsap.set(q(".ns-draw"), { strokeDasharray: 1, strokeDashoffset: 1 });
-      gsap.set(q(".ns-label, .ns-crowd, .ns-dest, .ns-copy > *"), { opacity: 0 });
-      gsap.set(q(".ns-copy > *"), { y: 24 });
+      // Grey routes draw by real length (no zero-length caps left behind at their ends).
+      const greys = Array.from(el.querySelectorAll<SVGPathElement>(".ns-grey"));
+      greys.forEach((g) => {
+        const l = g.getTotalLength();
+        gsap.set(g, { strokeDasharray: `${l} ${l + 2}`, strokeDashoffset: l + 1 });
+      });
+      gsap.set(q(".ns-label, .ns-crowd, .ns-dest"), { opacity: 0 });
       gsap.set(q(".ns-dest"), { scale: 0.4, transformOrigin: `${DEST.x}px ${DEST.y}px` });
+      // The copy is already there as the section arrives; the map starts drawing while the
+      // section is still scrolling in, then keeps going once it pins.
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: el, start: "top top", end: "bottom bottom", scrub: 0.8 },
+        scrollTrigger: { trigger: el, start: "top 55%", end: "bottom bottom", scrub: 0.6 },
       });
-      tl.to(q(".ns-copy > *"), { opacity: 1, y: 0, stagger: 0.04, duration: 0.12, ease: "power2.out" }, 0)
-        .to(q(".ns-grey"), { strokeDashoffset: 0, stagger: 0.05, duration: 0.24 }, 0.04)
-        .to(q(".ns-label"), { opacity: 1, stagger: 0.05, duration: 0.08 }, 0.12)
-        .to(q(".ns-crowd"), { opacity: 1, duration: 0.08 }, 0.36)
-        .to(q(".ns-greyset"), { opacity: 0.45, duration: 0.1 }, 0.5)
-        .to({}, { duration: 0.36 }, 0.5) // the sixth route itself is drawn in follow()
-        .to(q(".ns-dest"), { opacity: 1, scale: 1, duration: 0.1, ease: "back.out(2)" }, 0.84);
+      tl.to(greys, { strokeDashoffset: 0, stagger: 0.04, duration: 0.2 }, 0)
+        .to(q(".ns-label"), { opacity: 1, stagger: 0.04, duration: 0.06 }, 0.08)
+        .to(q(".ns-crowd"), { opacity: 1, duration: 0.08 }, 0.3)
+        .to(q(".ns-greyset"), { opacity: 0.45, duration: 0.1 }, 0.44)
+        .to({}, { duration: 0.4 }, 0.44) // the sixth route itself is drawn in follow()
+        .to(q(".ns-dest"), { opacity: 1, scale: 1, duration: 0.1, ease: "back.out(2)" }, 0.84)
+        .to({}, { duration: 0.06 }, 0.94);
       const path = el.querySelector<SVGPathElement>(".ns-sixth")!;
       const head = el.querySelector<SVGCircleElement>(".ns-head")!;
       // One progress value drives both the line and its travelling dot, in real path length,
@@ -50,7 +56,7 @@ function NameStory() {
       path.style.strokeDasharray = `${len} ${len + 2}`;
       const st = tl.scrollTrigger!;
       const follow = () => {
-        const p = gsap.utils.clamp(0, 1, (tl.time() - 0.5) / 0.36);
+        const p = gsap.utils.clamp(0, 1, (tl.time() - 0.44) / 0.4);
         path.style.strokeDashoffset = String(len * (1 - p) + (p === 0 ? 1 : 0));
         path.style.opacity = p > 0 ? "1" : "0";
         const pt = path.getPointAtLength(len * p);
@@ -72,7 +78,7 @@ function NameStory() {
   return (
     <div className="ns" ref={root}>
       <div className="ns__sticky wrap">
-        <div className="ns-copy">
+        <div className="ns-copy" data-reveal>
           <p className="eyebrow">{NAME_STORY.eyebrow}</p>
           <h3 className="ns__title">
             {NAME_STORY.headline[0]} {NAME_STORY.headline[1]} <span className="accent">{NAME_STORY.accent}</span>
@@ -82,7 +88,7 @@ function NameStory() {
         <svg className="ns__map" viewBox="0 0 1000 620" role="img" aria-label="Five obvious routes end at the same crowded point; the sixth route loops away to somewhere new.">
           <g className="ns-greyset">
             {ROUTES.map((r, i) => (
-              <path key={i} className="ns-draw ns-grey" d={r.d} pathLength={1} />
+              <path key={i} className="ns-grey" d={r.d} />
             ))}
             {ROUTES.map((r, i) => (
               <text key={i} className="ns-label" x={r.label.x} y={r.label.y - 8}>

@@ -47,7 +47,7 @@ changing anything visual.
 | `src/pages/` + `src/entries/` | `Home`, `Contact`, `NotFound`; one entry per HTML page (`src/mount.tsx` bootstraps). |
 
 Sections: Loader · Nav · Hero · Disciplines ticker · About + name story · Manifesto (reroutes) ·
-What We Do (dial) · Featured Projects · Why Sixthroute (ThreeUI Constellation Field) ·
+What We Do (dial) · Featured Projects · The Sixthroute difference (ThreeUI Constellation Field) ·
 Process (sticky staircase) · The Work Speaks for Itself · FAQ · Final CTA (ThreeUI Ribbon Field) · Footer.
 
 ## Before launch

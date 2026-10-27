@@ -6,17 +6,17 @@ import "./manifesto.css";
 
 type Box = { x: number; y: number; w: number; h: number };
 
-/** Route for one reroute: strike through the obvious word, U-turn round its end, then underline
- *  the new word right-to-left so the line never cuts through text. */
-function reroute(from: Box, to: Box, maxX: number) {
-  const ys = from.y + from.h * 0.56;
-  const x0 = from.x - 28;
-  const xe = from.x + from.w + 28;
+/** Route for one pair: underline the first word, U-turn round its end, then underline the second
+ *  word right-to-left. One continuous route joins both words; neither is crossed out. */
+function link(from: Box, to: Box, maxX: number) {
+  const ya = from.y + from.h * 0.97;
+  const x0 = from.x - 6;
+  const xe = from.x + from.w + 18;
   const yu = to.y + to.h * 0.98;
   const xr = to.x + to.w + 18;
-  const xl = to.x - 8;
-  const turn = Math.min(Math.max(xe, xr) + Math.max(70, (yu - ys) * 0.55), maxX);
-  return `M${x0} ${ys}L${xe} ${ys}C${turn} ${ys} ${turn} ${yu} ${xr} ${yu}L${xl} ${yu}`;
+  const xl = to.x - 6;
+  const turn = Math.min(Math.max(xe, xr) + Math.max(60, (yu - ya) * 0.55), maxX);
+  return `M${x0} ${ya}L${xe} ${ya}C${turn} ${ya} ${turn} ${yu} ${xr} ${yu}L${xl} ${yu}`;
 }
 
 export function Manifesto() {
@@ -44,7 +44,7 @@ export function Manifesto() {
         const he = el as HTMLElement;
         return { x, y, w: he.offsetWidth, h: he.offsetHeight };
       };
-      const pairs = Array.from(st.querySelectorAll(".mf-pair")).map((p) => reroute(box(p.querySelector(".mf-from")), box(p.querySelector(".mf-to")), base.width - 8));
+      const pairs = Array.from(st.querySelectorAll(".mf-pair")).map((p) => link(box(p.querySelector(".mf-from")), box(p.querySelector(".mf-to")), base.width - 8));
       const fut = box(st.querySelector(".mf-create"));
       const ys = fut.y + fut.h * 0.98;
       const endX = Math.min(base.width - 60, fut.x + fut.w + 220);
@@ -87,7 +87,6 @@ export function Manifesto() {
           .set(q(".mf-count b"), { textContent: String(i + 1).padStart(2, "0") }, t)
           .to(pq(".mf-from"), { yPercent: 0, opacity: 1, duration: 0.18 }, t)
           .to(line, { strokeDashoffset: 0, duration: 0.42, ease: "power1.inOut" }, t + 0.16)
-          .to(pq(".mf-from"), { opacity: 0.28, duration: 0.1 }, t + 0.24)
           .to(pq(".mf-to"), { yPercent: 0, opacity: 1, duration: 0.2 }, t + 0.42)
           .to(pair, { autoAlpha: 0, yPercent: -18, duration: 0.18, ease: "power2.in" }, t + 0.8)
           .to(line, { opacity: 0, duration: 0.14 }, t + 0.8);
