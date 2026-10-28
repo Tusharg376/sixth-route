@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MANIFESTO, MANIFESTO_SCENE as M } from "../content";
 import { Mark } from "../brand/Logo";
 import { gsap, prefersReducedMotion } from "../lib/motion";
-import { PHONE, useMedia } from "../lib/media";
+import { LANDSCAPE_PHONE, PHONE, useMedia } from "../lib/media";
 import "./manifesto.css";
 
 type Box = { x: number; y: number; w: number; h: number };
@@ -21,8 +21,11 @@ function link(from: Box, to: Box, maxX: number) {
 }
 
 export function Manifesto() {
+  // Phones, upright or on their side, get the list; a pinned scene needs a taller screen.
   const phone = useMedia(PHONE);
-  return phone && !prefersReducedMotion() ? <ManifestoList /> : <ManifestoScene />;
+  const sideways = useMedia(LANDSCAPE_PHONE);
+  const list = phone || sideways;
+  return list && !prefersReducedMotion() ? <ManifestoList /> : <ManifestoScene />;
 }
 
 /** Layout offset of `el` inside `root` (not its on-screen box, so transforms never skew it). */

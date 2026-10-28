@@ -277,3 +277,55 @@
     touch-action: pan-y;
   }
 }
+
+/* Phone on its side: one screen, headline on the left, sphere on the right. */
+@media (orientation: landscape) and (max-height: 500px) and (hover: none) {
+  .hero,
+  .hero__inner {
+    min-height: 100svh;
+    height: 100svh;
+  }
+  .hero__inner {
+    padding-top: 86px;
+    padding-bottom: 14px;
+  }
+  .hero__eyebrow {
+    justify-self: start;
+    margin-bottom: 8px;
+    letter-spacing: 0.2em;
+  }
+  .hero__title {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto;
+    justify-items: start;
+    column-gap: 24px;
+    text-align: left;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .hero__top {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+  }
+  .hero__bottom {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .hero__slot {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1;
+    margin: 0;
+  }
+  .hero__foot {
+    justify-items: start;
+    margin-top: 12px;
+  }
+  .hero__body {
+    display: none;
+  }
+}

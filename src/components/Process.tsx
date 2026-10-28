@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { PROCESS, PROCESS_HEAD } from "../content";
-import { PHONE, useMedia } from "../lib/media";
+import { COMPACT, useMedia } from "../lib/media";
 import { gsap, prefersReducedMotion } from "../lib/motion";
 import "./process.css";
 
@@ -38,12 +38,12 @@ function StepArt({ step }: { step: number }) {
 }
 
 export function Process() {
-  const phone = useMedia(PHONE);
-  return phone ? <ProcessTimeline /> : <ProcessStaircase />;
+  const compact = useMedia(COMPACT);
+  return compact ? <ProcessTimeline /> : <ProcessStaircase />;
 }
 
 /**
- * Phones: the staircase becomes one route running down the page. The orange line draws with the
+ * Phones and tablets: the staircase becomes one route running down the page. The orange line draws with the
  * scroll and each step's node lights as the line reaches it; the step art draws in with it.
  */
 function ProcessTimeline() {
@@ -110,7 +110,7 @@ function ProcessTimeline() {
   );
 }
 
-/** Desktop and tablet: the sticky staircase of cards. */
+/** Desktop: the sticky staircase of cards. */
 function ProcessStaircase() {
   const stage = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLElement>(null);

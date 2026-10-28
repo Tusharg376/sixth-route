@@ -181,26 +181,10 @@
   font-weight: 700;
 }
 
-@media (max-width: 1024px) {
-  .caps__stage {
-    grid-template-columns: 1fr;
-  }
-  .dial {
-    width: min(100%, 420px);
-  }
-  .caps__detail {
-    min-height: 0;
-  }
-}
-@media (max-width: 600px) {
-  .caps__legend {
-    grid-template-columns: 1fr;
-  }
-}
 
-/* Phone: one screen. Detail on top, a row of dots for the eight, and the dial as a wheel half
-   off the bottom edge (pointer at 12 o'clock) that a sideways swipe turns. */
-@media (max-width: 600px) {
+/* Phones and tablets: one screen. Detail on top, a row of dots for the eight, and the dial as a
+   wheel half off the bottom edge (pointer at 12 o'clock) that a sideways swipe turns. */
+@media (max-width: 1024px) {
   .caps {
     padding-bottom: 0;
     overflow: hidden;
@@ -260,18 +244,31 @@
     width: 22px;
     background: var(--sr-orange);
   }
-  /* Only the top of a 128vw wheel shows: the segment band, the pointer and the edge of the hub. */
+  /* Only the top of the wheel shows: the segment band, the pointer and the edge of the hub.
+     128vw on a phone; capped on tablets and short landscape screens. */
   .dial {
+    --wheel: min(128vw, 760px, 120svh);
     order: 2;
-    width: 128vw;
+    width: var(--wheel);
     max-width: none;
-    height: 44vw;
-    margin: 10px 0 0 calc(50% - 64vw);
+    height: calc(var(--wheel) * 0.344);
+    margin: 10px 0 0 calc(50% - var(--wheel) / 2);
     overflow: hidden;
     touch-action: pan-y;
   }
   .caps.is-spinning .dial__ring,
   .caps.is-spinning .dial__icon {
     transition: none;
+  }
+}
+@media (min-width: 601px) and (max-width: 1024px) {
+  .caps__detail {
+    min-height: 220px;
+  }
+  .caps__detail h3 {
+    font-size: 2.6rem;
+  }
+  .caps__body {
+    font-size: var(--fs-lead);
   }
 }

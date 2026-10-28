@@ -350,8 +350,9 @@
   }
 }
 
-/* Phone: the project index (ProjectIndex) — a sticky preview window over a list of titles. */
-@media (max-width: 600px) {
+/* Phones and tablets: the project index (ProjectIndex) — a sticky preview window over a list
+   of titles. Tablets put the two side by side (below). */
+@media (max-width: 1024px) {
   .work--index {
     padding-block: var(--section-y) 72px;
   }
@@ -545,5 +546,25 @@
   }
   .case--sheet .case__body {
     padding: 24px var(--gutter) 32px;
+  }
+}
+@media (min-width: 601px) and (max-width: 1024px) {
+  .wx__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .wx__preview {
+    top: 96px;
+  }
+  .wx__preview::before {
+    display: none;
+  }
+  .wx__frame {
+    height: min(68svh, 620px);
+  }
+  .wx__list {
+    margin-top: 0;
   }
 }

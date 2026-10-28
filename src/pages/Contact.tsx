@@ -37,13 +37,22 @@ export default function Contact() {
             <p className="ct-hero__body ct-in" style={{ ["--d" as string]: 3 }}>
               {CONTACT_PAGE.body}
             </p>
+            {/* Phones: what happens next, as a three-step strip just above the form. */}
+            <ol className="ct-strip ct-in" style={{ ["--d" as string]: 4 }} aria-label="What happens next">
+              {CONTACT_PAGE.next.map((s, i) => (
+                <li key={s.title}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  {s.title}
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
         <section className="ct-main on-light" data-nav="light" aria-label="Send us your brief">
           <div className="wrap ct-grid">
             <aside className="ct-side">
-              <div className="ct-block" data-reveal>
+              <div className="ct-block ct-block--next" data-reveal>
                 <p className="eyebrow">What happens next</p>
                 <ol className="ct-steps">
                   {CONTACT_PAGE.next.map((s, i) => (

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { CAPABILITIES, CAPABILITIES_HEAD } from "../content";
 import { Mark } from "../brand/Logo";
-import { PHONE, useMedia } from "../lib/media";
+import { COMPACT, useMedia } from "../lib/media";
 import { prefersReducedMotion } from "../lib/motion";
 import { Icon } from "./Icon";
 import "./capabilities.css";
@@ -44,9 +44,9 @@ export function Capabilities() {
   const stage = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  // Phones: the dial becomes a wheel half off the bottom edge, pointer at 12 o'clock, and a
-  // sideways drag turns it under the thumb (it follows the finger, then snaps to a segment).
-  const phone = useMedia(PHONE);
+  // Phones and tablets: the dial becomes a wheel half off the bottom edge, pointer at 12 o'clock,
+  // and a sideways drag turns it under the thumb (it follows the finger, then snaps to a segment).
+  const wheel = useMedia(COMPACT);
   const [spin, setSpin] = useState(0); // live drag, in degrees
   const swipe = useRef<{ id: number; x: number; px: number } | null>(null);
 
@@ -96,7 +96,7 @@ export function Capabilities() {
   };
 
   const onDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (!phone || e.pointerType === "mouse") return;
+    if (!wheel || e.pointerType === "mouse") return;
     const svg = e.currentTarget.querySelector("svg")!;
     // Degrees per pixel at the middle of the segment band, so the wheel tracks the finger.
     const r = (svg.getBoundingClientRect().width * ((R_OUT + R_IN) / 2)) / 128;
@@ -121,9 +121,9 @@ export function Capabilities() {
     select(active - steps);
   };
 
-  // Base rotation puts segment 0 (drawn at 12 o'clock) at 3 o'clock, facing the panel; on a
-  // phone the pointer sits at 12 o'clock instead.
-  const turn = (phone ? 0 : 90) + rot + spin;
+  // Base rotation puts segment 0 (drawn at 12 o'clock) at 3 o'clock, facing the panel; on the
+  // wheel the pointer sits at 12 o'clock instead.
+  const turn = (wheel ? 0 : 90) + rot + spin;
   const c = CAPABILITIES[active];
 
   return (
@@ -162,7 +162,7 @@ export function Capabilities() {
           >
             <svg viewBox="-64 -64 128 128" aria-hidden="true">
               {/* Pointer + the route out to the panel. */}
-              <g transform={phone ? "rotate(-90)" : undefined}>
+              <g transform={wheel ? "rotate(-90)" : undefined}>
                 <path className="dial__route" d="M60 0H64" />
                 <path className="dial__notch" d="M58.6 -3.4L62.6 0L58.6 3.4Z" />
               </g>

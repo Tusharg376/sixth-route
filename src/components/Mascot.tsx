@@ -3,7 +3,8 @@ import { ROUTE_OUTLINE } from "../brand/logoData";
 import "./mascot.css";
 
 // "Route", the 404 mascot: the Sixth Route mark itself. The loop of the 6 becomes its face,
-// the eyes follow the cursor, and a dashed route curls into a question mark over its head.
+// the eyes follow the cursor (on touch screens: the last tap, and a look around when idle), and
+// a dashed route curls into a question mark over its head.
 const EYES = [
   { x: 51, y: 63 },
   { x: 69, y: 63 },
@@ -33,18 +34,34 @@ export function Mascot({ happy = false, className = "" }: { happy?: boolean; cla
         const dy = py - ey;
         const d = Math.hypot(dx, dy) || 1;
         const m = Math.min(2.6, d / 60);
-        p.setAttribute("transform", `translate(${(dx / d) * m} ${(dy / d) * m})`);
+        p.style.transform = `translate(${(dx / d) * m}px, ${(dy / d) * m}px)`;
       });
     };
+    let last = performance.now();
     const onMove = (e: PointerEvent) => {
       px = e.clientX;
       py = e.clientY;
+      last = performance.now();
       if (!raf) raf = requestAnimationFrame(update);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onMove, { passive: true });
+    // No cursor to follow: after a few quiet seconds the eyes glance somewhere new now and then.
+    const look = window.matchMedia("(hover: none)").matches
+      ? window.setInterval(() => {
+          if (performance.now() - last < 2500) return;
+          const r = el.getBoundingClientRect();
+          const a = Math.random() * Math.PI * 2;
+          px = r.left + r.width / 2 + Math.cos(a) * 240;
+          py = r.top + r.height * 0.6 + Math.sin(a) * 160;
+          update();
+        }, 1700)
+      : 0;
     update();
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onMove);
+      window.clearInterval(look);
       cancelAnimationFrame(raf);
     };
   }, []);

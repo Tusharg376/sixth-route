@@ -88,8 +88,33 @@
 .why__points p {
   color: var(--muted-dark);
 }
-@media (max-width: 1024px) {
+/* Phone: the three points as rows, icon on the left, thin dividers instead of boxes. */
+@media (max-width: 600px) {
   .why__points {
     grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 36px;
+  }
+  .why__points li {
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 4px;
+    padding: 20px 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    border-top: 1px solid var(--line-dark);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .why__points li > svg {
+    grid-row: span 2;
+  }
+  .why__points h3 {
+    margin-top: 4px;
+    font-size: 1.1rem;
+  }
+  .why__points p {
+    font-size: 0.95rem;
   }
 }

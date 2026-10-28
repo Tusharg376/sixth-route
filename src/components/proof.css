@@ -81,13 +81,42 @@
   color: var(--sr-night);
 }
 @media (max-width: 1024px) {
-  .proof__grid {
-    grid-template-columns: 1fr;
-  }
   .proof__list a {
     grid-template-columns: 44px minmax(0, 1fr) 36px;
     padding: 18px;
     gap: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .proof__grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .proof__list {
+    gap: 0;
+  }
+  .proof__list a {
+    grid-template-columns: 32px minmax(0, 1fr) 36px;
+    padding: 16px 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    border-top: 1px solid var(--line-light);
+  }
+  .proof__list a > svg {
+    width: 32px;
+    height: 32px;
+  }
+  .proof__go {
+    width: 36px;
+    height: 36px;
+  }
+  .proof__text strong {
+    font-size: 1.05rem;
+  }
+  .proof__text span {
+    font-size: 0.9rem;
+    line-height: 1.4;
   }
 }
 

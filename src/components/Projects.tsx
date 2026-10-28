@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { CONTACT_HREF, PROJECTS, PROJECTS_HEAD } from "../content";
 import { gsap, getLenis, prefersReducedMotion } from "../lib/motion";
-import { DESKTOP, PHONE, useMedia } from "../lib/media";
+import { COMPACT, DESKTOP, PHONE, useMedia } from "../lib/media";
 import { ProjectArt } from "./ProjectArt";
 import { ArrowRight, ArrowUpRight } from "./Icon";
 import "./projects.css";
@@ -10,11 +10,12 @@ const studio = (label: string) => (label === "Studio project" ? "is-studio" : ""
 
 export function Projects() {
   const [active, setActive] = useState<number | null>(null);
+  const compact = useMedia(COMPACT);
   const phone = useMedia(PHONE);
 
   return (
-    <section id="work" className={`work on-light ${phone ? "work--index" : ""}`} data-nav="light">
-      {phone ? <ProjectIndex onOpen={setActive} /> : <ProjectRow onOpen={setActive} />}
+    <section id="work" className={`work on-light ${compact ? "work--index" : ""}`} data-nav="light">
+      {compact ? <ProjectIndex onOpen={setActive} /> : <ProjectRow onOpen={setActive} />}
       <CaseDialog active={active} sheet={phone} onClosed={() => setActive(null)} />
     </section>
   );
@@ -41,7 +42,7 @@ function ProjectsHead() {
   );
 }
 
-/** Desktop and tablet: the row of tall cards. */
+/** Desktop: the row of tall cards. */
 function ProjectRow({ onOpen }: { onOpen: (i: number) => void }) {
   const pin = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLUListElement>(null);
@@ -117,7 +118,7 @@ function ProjectRow({ onOpen }: { onOpen: (i: number) => void }) {
 }
 
 /**
- * Phones: an index instead of a sideways row. A preview window sticks at the top while the
+ * Phones and tablets: an index instead of a sideways row. A preview window sticks at the top while the
  * project titles scroll up beneath it; whichever title crosses the line just under the window
  * takes over the preview. Every project is visible as a title; tap one for its case study.
  */

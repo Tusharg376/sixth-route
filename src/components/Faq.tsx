@@ -5,6 +5,7 @@ import "./faq.css";
 
 export function Faq() {
   const [open, setOpen] = useState(0);
+  const [all, setAll] = useState(false);
   const base = useId();
   return (
     <section id="faq" className="faq on-light" data-nav="light" aria-labelledby="faq-title">
@@ -21,7 +22,7 @@ export function Faq() {
             </span>
           </a>
         </div>
-        <ul className="faq__list">
+        <ul id={`${base}-list`} className={`faq__list ${all ? "is-all" : ""}`}>
           {FAQS.map((f, i) => {
             const isOpen = open === i;
             const id = `${base}-${i}`;
@@ -43,6 +44,12 @@ export function Faq() {
             );
           })}
         </ul>
+        {/* Phones show the first four questions (faq.css); the rest stay in the page, one tap away. */}
+        {!all && (
+          <button className="faq__more" aria-expanded={false} aria-controls={`${base}-list`} onClick={() => setAll(true)}>
+            Show all {FAQS.length} questions
+          </button>
+        )}
       </div>
     </section>
   );

@@ -138,41 +138,13 @@ circle.sa-draw {
   transform: none;
 }
 
-@media (max-width: 1024px) {
-  .process__rail {
-    position: static;
-  }
-  .process__head {
-    position: static;
-    margin-bottom: 40px;
-  }
-  .process__track {
-    padding-top: 0 !important;
-  }
-  .process__track {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-  .process__col {
-    padding: 0;
-  }
-  .process__col::after {
-    display: none;
-  }
-  .pcard {
-    position: relative;
-    top: 0;
-    height: auto;
-    min-height: 400px;
-  }
-}
-@media (max-width: 600px) {
-  .process__track {
-    grid-template-columns: 1fr;
-  }
-}
 
-/* Phone: the route timeline (ProcessTimeline). */
+/* Phones and tablets: the route timeline (ProcessTimeline). */
+.process--timeline .process__head {
+  position: static;
+  margin-bottom: 40px;
+  padding-bottom: 0;
+}
 .ptl {
   --p: 0;
   --tail: 0px;
@@ -269,4 +241,22 @@ circle.sa-draw {
 }
 .ptl .sa-dot.is-on {
   fill: var(--sr-cream);
+}
+@media (min-width: 601px) {
+  .ptl__step {
+    grid-template-columns: 16px minmax(0, 1fr) 160px;
+    column-gap: 24px;
+    padding-bottom: 56px;
+  }
+  .ptl .step-art {
+    width: 160px;
+  }
+  .ptl__head h3 {
+    font-size: 1.6rem;
+  }
+  .ptl__step > p {
+    grid-column: 2;
+    max-width: 52ch;
+    font-size: 1.05rem;
+  }
 }

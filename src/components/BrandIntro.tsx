@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { INTRO, NAME_STORY } from "../content";
+import { HERO, INTRO, NAME_STORY } from "../content";
 import { Mark } from "../brand/Logo";
-import { PHONE, useMedia } from "../lib/media";
+import { LANDSCAPE_PHONE, PHONE, useMedia } from "../lib/media";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "../lib/motion";
 import { ArrowRight } from "./Icon";
 import "./intro.css";
@@ -53,13 +53,15 @@ const shortName = (label: string) => label.replace(/^The\s+/i, "").replace(/\s+r
 function NameStory() {
   const root = useRef<HTMLDivElement>(null);
   const phone = useMedia(PHONE);
+  // A phone on its side is too short to pin: the map is simply shown, fully drawn.
+  const flat = useMedia(LANDSCAPE_PHONE);
   const map = phone ? PORTRAIT : LANDSCAPE;
   const { origin, crowd, dest } = map;
 
   useEffect(() => {
     const el = root.current!;
     const q = gsap.utils.selector(el);
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || flat) return;
     const { dest } = phone ? PORTRAIT : LANDSCAPE;
     const ctx = gsap.context(() => {
       // Grey routes draw by real length (no zero-length caps left behind at their ends).
@@ -111,7 +113,7 @@ function NameStory() {
       };
     }, el);
     return () => ctx.revert();
-  }, [phone]);
+  }, [phone, flat]);
 
   return (
     <div className="ns" ref={root}>
@@ -182,6 +184,7 @@ function NameStory() {
 }
 
 export function BrandIntro() {
+  const phone = useMedia(PHONE);
   return (
     <>
       <section id="about" className="intro on-light" data-nav="light">
@@ -198,9 +201,19 @@ export function BrandIntro() {
             <p className="intro__lead" data-reveal>
               {INTRO.lead}
             </p>
-            <p className="intro__body" data-reveal style={{ ["--reveal-delay" as string]: "80ms" }}>
-              {INTRO.body}
-            </p>
+            {phone ? (
+              // Phones keep the opener short: the rest of the story (and the hero's line, which
+              // the phone hero leaves out) is one tap away.
+              <details className="intro__more" data-reveal style={{ ["--reveal-delay" as string]: "80ms" }}>
+                <summary>More about how we work</summary>
+                <p className="intro__body">{HERO.body}</p>
+                <p className="intro__body">{INTRO.body}</p>
+              </details>
+            ) : (
+              <p className="intro__body" data-reveal style={{ ["--reveal-delay" as string]: "80ms" }}>
+                {INTRO.body}
+              </p>
+            )}
             <div className="intro__sign" data-reveal style={{ ["--reveal-delay" as string]: "160ms" }}>
               <p className="intro__statement">{INTRO.statement}</p>
               <a href="#story" className="text-link">

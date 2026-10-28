@@ -194,3 +194,39 @@
     padding-block: 12px;
   }
 }
+
+.ct-strip {
+  display: none;
+}
+/* Phone: the three steps as one strip over the form; the full list below it would repeat it. */
+@media (max-width: 600px) {
+  .ct-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ct-strip li {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding-top: 10px;
+    border-top: 2px solid var(--sr-orange);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.8rem;
+    line-height: 1.25;
+    color: var(--sr-white);
+  }
+  .ct-strip li > span {
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--sr-orange);
+  }
+  .ct-block--next {
+    display: none;
+  }
+}

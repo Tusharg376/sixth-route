@@ -9,6 +9,8 @@ export const COMPACT = "(max-width: 1024px)";
 export const DESKTOP = "(min-width: 1025px)";
 /** Touch-first input, whatever the width: no hover, coarse pointer. */
 export const TOUCH = "(hover: none)";
+/** A phone on its side: too short for pinned scenes (CSS repeats this query). */
+export const LANDSCAPE_PHONE = "(orientation: landscape) and (max-height: 500px) and (hover: none)";
 
 export const matches = (query: string) => typeof window !== "undefined" && window.matchMedia(query).matches;
 

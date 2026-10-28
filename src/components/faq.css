@@ -130,3 +130,52 @@
     padding: 0 18px 22px 58px;
   }
 }
+
+.faq__more {
+  display: none;
+}
+/* Phone: a two-line heading, the first four questions, then "Ask us directly" after the list. */
+@media (max-width: 600px) {
+  .faq__grid {
+    gap: 24px;
+  }
+  .faq__side {
+    display: contents;
+  }
+  .faq__title {
+    font-size: 2rem;
+  }
+  .faq__title .accent {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+  .faq__list:not(.is-all) .faq__item:nth-child(n + 5) {
+    display: none;
+  }
+  .faq__more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 52px;
+    margin-top: -12px;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px var(--line-light);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--sr-maroon);
+  }
+  .faq__more:active {
+    background: var(--sr-white);
+  }
+  .faq__side .btn {
+    order: 1;
+    justify-self: start;
+  }
+  .faq__item button {
+    padding: 16px 14px;
+  }
+}

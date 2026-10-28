@@ -324,7 +324,13 @@ of following the pointer.
    plus a tall map can't share one screen, so the map draws as it scrolls up instead), and the dial
    keeps its tab list as a row of dots, so keyboard and screen-reader users still have it. The
    phone home page measured 15.3 screens after this phase (from 22.4).
-3. **Trims**: About, Sixthroute difference, Proof, FAQ, Footer, Contact, 404, tablet and landscape.
+3. ✅ **Trims** (done on `mobile/redesign`): About, Sixthroute difference, Proof, FAQ, Footer,
+   Contact, 404, tablet and landscape. Tablets (601–1024px) get the project index (preview and list
+   side by side), the route timeline and the wheel, and keep two columns for About and Proof and
+   three for the Sixthroute difference. The Contact page's "what happens next" became a strip in the
+   hero, just above the form. The phone home page measured 13.3 screens after this phase. Also
+   fixed: on real phones the open menu was taller than the visible screen and its first link slid
+   up under the logo.
 4. **QA + docs**: an automated audit at 360/390/430/768 px and landscape (overflow, tap targets,
    text size, page length), a check on a real iPhone (Safari) and Android phone (Chrome) through the
    preview URL, and a "Mobile" chapter in `design.md`.

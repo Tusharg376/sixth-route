@@ -260,3 +260,9 @@
   margin-top: 28px;
   flex-direction: column;
 }
+@media (orientation: landscape) and (max-height: 500px) and (hover: none) {
+  .mfl__head {
+    position: static;
+    background: none;
+  }
+}
