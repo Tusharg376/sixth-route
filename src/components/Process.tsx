@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { PROCESS, PROCESS_HEAD } from "../content";
+import { PHONE, useMedia } from "../lib/media";
+import { gsap, prefersReducedMotion } from "../lib/motion";
 import "./process.css";
 
 // The same six points appear on every card; each step does more with them, so the four cards
@@ -36,6 +38,80 @@ function StepArt({ step }: { step: number }) {
 }
 
 export function Process() {
+  const phone = useMedia(PHONE);
+  return phone ? <ProcessTimeline /> : <ProcessStaircase />;
+}
+
+/**
+ * Phones: the staircase becomes one route running down the page. The orange line draws with the
+ * scroll and each step's node lights as the line reaches it; the step art draws in with it.
+ */
+function ProcessTimeline() {
+  const list = useRef<HTMLOListElement>(null);
+
+  useEffect(() => {
+    const el = list.current!;
+    const steps = Array.from(el.querySelectorAll<HTMLElement>(".ptl__step"));
+    // The line runs node to node: it stops at the last node, not at the end of the list.
+    const tail = () => steps[steps.length - 1].offsetHeight - 12;
+    const setTail = () => el.style.setProperty("--tail", `${tail()}px`);
+    setTail();
+    const ro = new ResizeObserver(setTail);
+    ro.observe(el);
+    if (prefersReducedMotion()) {
+      el.style.setProperty("--p", "1");
+      steps.forEach((s) => s.classList.add("is-on"));
+      return () => ro.disconnect();
+    }
+    const ctx = gsap.context(() => {
+      // The line's head rides the 62% line of the screen; a node lights the moment it arrives.
+      gsap.fromTo(
+        el,
+        { "--p": 0 },
+        { "--p": 1, ease: "none", scrollTrigger: { trigger: el, start: "top+=12 62%", end: () => `bottom-=${tail()} 62%`, scrub: 0.3, invalidateOnRefresh: true } },
+      );
+      steps.forEach((s) =>
+        gsap.timeline({
+          scrollTrigger: { trigger: s, start: "top+=12 62%", onEnter: () => s.classList.add("is-on"), onLeaveBack: () => s.classList.remove("is-on") },
+        }),
+      );
+    }, el);
+    return () => {
+      ctx.revert();
+      ro.disconnect();
+    };
+  }, []);
+
+  return (
+    <section className="process process--timeline on-dark" data-nav="dark" aria-labelledby="process-title">
+      <div className="wrap">
+        <header className="section-head process__head">
+          <div>
+            <p className="eyebrow">{PROCESS_HEAD.eyebrow}</p>
+            <h2 id="process-title">{PROCESS_HEAD.headline}</h2>
+          </div>
+          <p>{PROCESS_HEAD.body}</p>
+        </header>
+        <ol className="ptl" ref={list}>
+          {PROCESS.map((p, i) => (
+            <li key={p.title} className="ptl__step">
+              <span className="ptl__node" aria-hidden="true" />
+              <div className="ptl__head">
+                <span className="ptl__num">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{p.title}</h3>
+              </div>
+              <StepArt step={i} />
+              <p>{p.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+/** Desktop and tablet: the sticky staircase of cards. */
+function ProcessStaircase() {
   const stage = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLElement>(null);
 

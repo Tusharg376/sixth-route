@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MANIFESTO, MANIFESTO_SCENE as M } from "../content";
 import { Mark } from "../brand/Logo";
 import { gsap, prefersReducedMotion } from "../lib/motion";
+import { PHONE, useMedia } from "../lib/media";
 import "./manifesto.css";
 
 type Box = { x: number; y: number; w: number; h: number };
@@ -20,6 +21,132 @@ function link(from: Box, to: Box, maxX: number) {
 }
 
 export function Manifesto() {
+  const phone = useMedia(PHONE);
+  return phone && !prefersReducedMotion() ? <ManifestoList /> : <ManifestoScene />;
+}
+
+/** Layout offset of `el` inside `root` (not its on-screen box, so transforms never skew it). */
+function boxIn(root: HTMLElement, el: Element | null): Box {
+  let n = el as HTMLElement | null;
+  let x = 0;
+  let y = 0;
+  while (n && n !== root) {
+    x += n.offsetLeft;
+    y += n.offsetTop;
+    n = n.offsetParent as HTMLElement | null;
+  }
+  const he = el as HTMLElement;
+  return { x, y, w: he.offsetWidth, h: he.offsetHeight };
+}
+
+/**
+ * Phones: the manifesto as one list instead of six pinned slides. The question stays pinned at
+ * the top; each pair reroutes as it scrolls up the screen (first word in, the route underlines
+ * it, U-turns at the edge, underlines the second), and every pair stays, so it reads as a whole.
+ */
+function ManifestoList() {
+  const root = useRef<HTMLElement>(null);
+  const [paths, setPaths] = useState<{ rows: string[]; future: string; end: { x: number; y: number } } | null>(null);
+
+  useLayoutEffect(() => {
+    const el = root.current!;
+    const measure = () => {
+      const rows = Array.from(el.querySelectorAll<HTMLElement>(".mf-row")).map((row) =>
+        link(boxIn(row, row.querySelector(".mf-from")), boxIn(row, row.querySelector(".mf-to")), row.offsetWidth + 12),
+      );
+      const fin = el.querySelector<HTMLElement>(".mfl__finale")!;
+      const fut = boxIn(fin, fin.querySelector(".mf-create"));
+      const ys = fut.y + fut.h * 0.98;
+      const endX = fut.x + fut.w - 22;
+      setPaths({ rows, future: `M${fut.x} ${ys}L${endX - 30} ${ys}`, end: { x: endX, y: ys } });
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!paths) return;
+    const el = root.current!;
+    const q = gsap.utils.selector(el);
+    const ctx = gsap.context(() => {
+      (q(".mf-line") as unknown as SVGPathElement[]).forEach((l) => {
+        const len = l.getTotalLength();
+        gsap.set(l, { strokeDasharray: `${len} ${len + 2}`, strokeDashoffset: len + 1 });
+      });
+      (q(".mf-row") as HTMLElement[]).forEach((row) => {
+        const rq = gsap.utils.selector(row);
+        gsap
+          .timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: row, start: "top 84%", end: "top 46%", scrub: 0.6 } })
+          .from(rq(".mf-from"), { yPercent: 60, opacity: 0, duration: 0.3 }, 0)
+          .to(rq(".mf-line"), { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 0.2)
+          .from(rq(".mf-to"), { yPercent: 60, opacity: 0, duration: 0.3 }, 0.55);
+      });
+      gsap
+        .timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: q(".mfl__finale")[0], start: "top 82%", end: "top 30%", scrub: 0.6 } })
+        .from(q(".mfl__finale > p"), { y: 34, opacity: 0, stagger: 0.12, duration: 0.3 }, 0)
+        .to(q(".mfl__future-line"), { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 0.25)
+        .from(q(".mf-endmark"), { scale: 0, transformOrigin: "50% 50%", duration: 0.2, ease: "back.out(2)" }, 0.6);
+    }, el);
+    return () => ctx.revert();
+  }, [paths]);
+
+  return (
+    <section className="mf2 mfl on-dark" data-nav="dark" ref={root} aria-label="Manifesto">
+      <div className="wrap">
+        {/* The question sticks only for the pairs, then lets go before the finale. */}
+        <div className="mfl__pairs">
+          <div className="mfl__head">
+            <p className="eyebrow mf-eyebrow">Manifesto</p>
+            <p className="mfl__q">
+              {M.question[0]} <span className="accent">{M.question[1]}</span>
+            </p>
+            <p className="mfl__verb">{M.verb}…</p>
+          </div>
+          <ol className="mfl__rows">
+            {M.pairs.map(([from, to], i) => (
+              <li className="mf-row" key={from}>
+                <span className="mf-from">{from}</span>
+                <span className="mf-to accent">{to}</span>
+                <svg className="mf-routes" aria-hidden="true">
+                  {paths && <path className="mf-line" d={paths.rows[i]} />}
+                </svg>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="mfl__finale">
+          <p className="mf-future">{M.future[0]}</p>
+          <p className="mf-create accent">{M.future[1]}</p>
+          <p className="mf-closers">
+            {M.closers.map((c) => (
+              <span key={c}>{c}</span>
+            ))}
+          </p>
+          <p className="mf-welcome">{M.welcome}</p>
+          <svg className="mf-routes" aria-hidden="true">
+            {paths && (
+              <>
+                <path className="mf-line mfl__future-line" d={paths.future} />
+                <g className="mf-endmark">
+                  <svg x={paths.end.x - 22} y={paths.end.y - 22} width={44} height={44} viewBox="0 0 100 100" overflow="visible">
+                    <Mark size={100} glow />
+                  </svg>
+                </g>
+              </>
+            )}
+          </svg>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Desktop and tablet: the pinned sequence of reroutes. */
+function ManifestoScene() {
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [paths, setPaths] = useState<{ pairs: string[]; future: string; end: { x: number; y: number } } | null>(null);

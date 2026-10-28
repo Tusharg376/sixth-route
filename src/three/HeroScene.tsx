@@ -64,6 +64,8 @@ function Stage({ slot, started, lite }: Props & { lite: boolean }) {
   const spin = useRef<THREE.Group>(null);
   const intro = useRef({ p: prefersReducedMotion() ? 1 : 0 });
   const pointer = useRef({ x: 0, y: 0 });
+  // Touch spin: a sideways drag on the sphere turns it; it coasts, then settles on the mark.
+  const drag = useRef({ on: false, x: 0, t: 0, vel: 0, off: 0 });
   const layout = useRef({ x: 0, y: 0, r: 1 });
   // Ribbons must run past both screen edges whatever the sphere's size (in sphere radii).
   const [span, setSpan] = useState(40);
@@ -97,12 +99,47 @@ function Stage({ slot, started, lite }: Props & { lite: boolean }) {
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
+      // A finger isn't a cursor: touches would leave the sphere tilted at the last tap.
+      if (e.pointerType === "touch") return;
       pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.current.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
+
+  useEffect(() => {
+    const el = slot.current;
+    if (!el) return;
+    const d = drag.current;
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      Object.assign(d, { on: true, x: e.clientX, t: e.timeStamp, vel: 0 });
+    };
+    const move = (e: PointerEvent) => {
+      if (!d.on) return;
+      const turn = (e.clientX - d.x) * 0.012;
+      d.vel = turn / Math.max((e.timeStamp - d.t) / 1000, 0.008);
+      d.off += turn;
+      d.x = e.clientX;
+      d.t = e.timeStamp;
+    };
+    const up = () => {
+      // A finger that stopped before lifting shouldn't fling the sphere.
+      if (performance.now() - d.t > 90) d.vel = 0;
+      d.on = false;
+    };
+    el.addEventListener("pointerdown", down);
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    return () => {
+      el.removeEventListener("pointerdown", down);
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+    };
+  }, [slot]);
 
   useEffect(() => {
     if (!started || intro.current.p === 1) return;
@@ -131,10 +168,22 @@ function Stage({ slot, started, lite }: Props & { lite: boolean }) {
       silk.current.scale.setScalar(r);
     }
 
+    // Touch spin: coast with friction, then ease round to the nearest full turn so the 6 faces
+    // the viewer again.
+    const d = drag.current;
+    if (!d.on) {
+      d.off += d.vel * dt;
+      d.vel *= Math.pow(0.06, dt);
+      if (Math.abs(d.vel) < 0.8) {
+        const home = Math.round(d.off / (Math.PI * 2)) * Math.PI * 2;
+        d.off += (home - d.off) * (1 - Math.pow(0.03, dt));
+      }
+    }
+
     // Spin into alignment on entry, then follow the cursor; scrolling turns the route away.
     const k = 1 - Math.pow(0.0015, dt);
     const tx = (1 - p) * 0.7 + pointer.current.y * 0.22 - scroll * 0.25;
-    const ty = (1 - p) * -2.6 + pointer.current.x * 0.32 + scroll * 1.6;
+    const ty = (1 - p) * -2.6 + pointer.current.x * 0.32 + scroll * 1.6 + d.off;
     sp.rotation.x += (tx - sp.rotation.x) * k;
     sp.rotation.y += (ty - sp.rotation.y) * k;
   });

@@ -192,3 +192,71 @@
     top: 24%;
   }
 }
+
+/* Phone: the reroute list (ManifestoList). No pin; only the question sticks. */
+.mfl {
+  height: auto;
+  padding-block: 56px 96px;
+  overflow-x: clip;
+  background:
+    radial-gradient(60vmax 60vmax at 100% 0%, rgba(var(--sr-orange-rgb), 0.16), rgba(var(--sr-orange-rgb), 0) 70%),
+    radial-gradient(50vmax 50vmax at 0% 100%, rgba(var(--sr-orange-rgb), 0.12), rgba(var(--sr-orange-rgb), 0) 70%),
+    var(--sr-night);
+}
+.mfl__head {
+  position: sticky;
+  top: 82px;
+  z-index: 2;
+  display: grid;
+  gap: 12px;
+  padding: 14px 0 36px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  background: linear-gradient(var(--sr-night) 80%, rgba(var(--sr-night-rgb), 0));
+}
+.mfl__q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+.mfl__verb {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--muted-dark);
+}
+.mfl__rows {
+  display: grid;
+  gap: 30px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.mf-row {
+  position: relative;
+}
+.mfl .mf-from,
+.mfl .mf-to {
+  font-size: clamp(2rem, 10.4vw, 3rem);
+}
+.mfl .mf-to {
+  margin-left: 14vw;
+}
+.mfl .mf-line {
+  stroke-width: 3;
+}
+.mfl__finale {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 88px;
+}
+.mfl .mf-create {
+  font-size: clamp(2.3rem, 11vw, 3.2rem);
+}
+.mfl .mf-closers {
+  margin-top: 28px;
+  flex-direction: column;
+}

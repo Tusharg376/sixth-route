@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { INTRO, NAME_STORY } from "../content";
 import { Mark } from "../brand/Logo";
+import { PHONE, useMedia } from "../lib/media";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "../lib/motion";
 import { ArrowRight } from "./Icon";
 import "./intro.css";
@@ -19,13 +20,47 @@ const SIXTH =
   "M70 330 C 150 330, 170 175, 300 140 C 410 110, 520 40, 600 92 C 660 132, 618 214, 552 196 C 482 178, 516 74, 640 64 C 740 56, 820 84, 892 104";
 const DEST = { x: 900, y: 106 };
 
+type Map = {
+  view: string;
+  origin: { x: number; y: number };
+  crowd: { x: number; y: number };
+  routes: { d: string; label: { x: number; y: number } }[];
+  sixth: string;
+  dest: { x: number; y: number };
+};
+const LANDSCAPE: Map = { view: "0 0 1000 620", origin: ORIGIN, crowd: CROWD, routes: ROUTES, sixth: SIXTH, dest: DEST };
+
+// Phones: the same story drawn top to bottom. The brief starts at the top, the five routes fall
+// to a crowd at the bottom, and the sixth breaks right, loops, and lands on the mark. Labels sit
+// on their own route (staggered so they never meet), and carry just the one word that differs.
+const PORTRAIT: Map = {
+  view: "0 0 400 660",
+  origin: { x: 110, y: 58 },
+  crowd: { x: 124, y: 606 },
+  routes: [
+    { d: "M110 58 C 114 240, 138 430, 124 604", label: { x: 126, y: 400 } },
+    { d: "M110 58 C 44 220, 46 446, 120 602", label: { x: 69, y: 217 } },
+    { d: "M110 58 C 184 230, 176 456, 128 603", label: { x: 162, y: 282 } },
+    { d: "M110 58 C 4 270, 14 506, 117 607", label: { x: 37, y: 344 } },
+    { d: "M110 58 C 226 220, 206 486, 131 606", label: { x: 191, y: 378 } },
+  ],
+  sixth:
+    "M110 58 C 150 58, 210 86, 250 134 C 300 192, 362 220, 342 290 C 322 356, 242 338, 262 278 C 282 218, 372 256, 362 344 C 354 410, 332 440, 318 468",
+  dest: { x: 316, y: 478 },
+};
+const shortName = (label: string) => label.replace(/^The\s+/i, "").replace(/\s+route$/i, "");
+
 function NameStory() {
   const root = useRef<HTMLDivElement>(null);
+  const phone = useMedia(PHONE);
+  const map = phone ? PORTRAIT : LANDSCAPE;
+  const { origin, crowd, dest } = map;
 
   useEffect(() => {
     const el = root.current!;
     const q = gsap.utils.selector(el);
     if (prefersReducedMotion()) return;
+    const { dest } = phone ? PORTRAIT : LANDSCAPE;
     const ctx = gsap.context(() => {
       // Grey routes draw by real length (no zero-length caps left behind at their ends).
       const greys = Array.from(el.querySelectorAll<SVGPathElement>(".ns-grey"));
@@ -34,12 +69,15 @@ function NameStory() {
         gsap.set(g, { strokeDasharray: `${l} ${l + 2}`, strokeDashoffset: l + 1 });
       });
       gsap.set(q(".ns-label, .ns-crowd, .ns-dest"), { opacity: 0 });
-      gsap.set(q(".ns-dest"), { scale: 0.4, transformOrigin: `${DEST.x}px ${DEST.y}px` });
+      gsap.set(q(".ns-dest"), { scale: 0.4, transformOrigin: `${dest.x}px ${dest.y}px` });
       // The copy is already there as the section arrives; the map starts drawing while the
-      // section is still scrolling in, then keeps going once it pins.
+      // section is still scrolling in, then keeps going once it pins. Phones don't pin: the map
+      // draws downward as it scrolls up the screen, so the drawing stays in view.
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: el, start: "top 55%", end: "bottom bottom", scrub: 0.6 },
+        scrollTrigger: phone
+          ? { trigger: q(".ns__map")[0], start: "top 72%", end: "bottom 88%", scrub: 0.6 }
+          : { trigger: el, start: "top 55%", end: "bottom bottom", scrub: 0.6 },
       });
       tl.to(greys, { strokeDashoffset: 0, stagger: 0.04, duration: 0.2 }, 0)
         .to(q(".ns-label"), { opacity: 1, stagger: 0.04, duration: 0.06 }, 0.08)
@@ -73,7 +111,7 @@ function NameStory() {
       };
     }, el);
     return () => ctx.revert();
-  }, []);
+  }, [phone]);
 
   return (
     <div className="ns" ref={root}>
@@ -85,37 +123,55 @@ function NameStory() {
           </h3>
           <p className="ns__body">{NAME_STORY.body}</p>
         </div>
-        <svg className="ns__map" viewBox="0 0 1000 620" role="img" aria-label="Five obvious routes end at the same crowded point; the sixth route loops away to somewhere new.">
+        <svg
+          key={phone ? "portrait" : "landscape"}
+          className={`ns__map ${phone ? "ns__map--portrait" : ""}`}
+          viewBox={map.view}
+          role="img"
+          aria-label="Five obvious routes end at the same crowded point; the sixth route loops away to somewhere new."
+        >
           <g className="ns-greyset">
-            {ROUTES.map((r, i) => (
+            {map.routes.map((r, i) => (
               <path key={i} className="ns-grey" d={r.d} />
             ))}
-            {ROUTES.map((r, i) => (
-              <text key={i} className="ns-label" x={r.label.x} y={r.label.y - 8}>
-                {NAME_STORY.routes[i]}
-              </text>
-            ))}
+            {map.routes.map((r, i) =>
+              phone ? (
+                <text key={i} className="ns-label" x={r.label.x} y={r.label.y} textAnchor="middle" dominantBaseline="middle">
+                  {shortName(NAME_STORY.routes[i])}
+                </text>
+              ) : (
+                <text key={i} className="ns-label" x={r.label.x} y={r.label.y - 8}>
+                  {NAME_STORY.routes[i]}
+                </text>
+              ),
+            )}
             <g className="ns-crowd">
               {[-6, -2, 2, 6, 10].map((o, i) => (
-                <circle key={i} cx={CROWD.x + (i % 2 ? 4 : -2)} cy={CROWD.y + o - 2} r={4} />
+                <circle key={i} cx={crowd.x + (i % 2 ? 4 : -2)} cy={crowd.y + o - 2} r={4} />
               ))}
-              <text x={CROWD.x + 20} y={CROWD.y + 6}>
+              <text x={crowd.x + 20} y={crowd.y + 6}>
                 Somewhere crowded
               </text>
             </g>
           </g>
-          <circle className="ns-origin" cx={ORIGIN.x} cy={ORIGIN.y} r={7} />
-          <text className="ns-origin-label" x={ORIGIN.x - 6} y={ORIGIN.y + 34}>
-            Your brief
-          </text>
-          <path className="ns-sixth" d={SIXTH} />
-          <circle className="ns-head" r={7} cx={ORIGIN.x} cy={ORIGIN.y} />
+          <circle className="ns-origin" cx={origin.x} cy={origin.y} r={7} />
+          {phone ? (
+            <text className="ns-origin-label" x={origin.x} y={origin.y - 22} textAnchor="middle">
+              Your brief
+            </text>
+          ) : (
+            <text className="ns-origin-label" x={origin.x - 6} y={origin.y + 34}>
+              Your brief
+            </text>
+          )}
+          <path className="ns-sixth" d={map.sixth} />
+          <circle className="ns-head" r={7} cx={origin.x} cy={origin.y} />
           <g className="ns-dest">
-            <circle cx={DEST.x} cy={DEST.y} r={58} className="ns-dest-halo" />
-            <svg x={DEST.x - 34} y={DEST.y - 34} width={68} height={68} viewBox="0 0 100 100" overflow="visible">
+            <circle cx={dest.x} cy={dest.y} r={phone ? 50 : 58} className="ns-dest-halo" />
+            <svg x={dest.x - 34} y={dest.y - 34} width={68} height={68} viewBox="0 0 100 100" overflow="visible">
               <Mark size={100} />
             </svg>
-            <text x={DEST.x} y={DEST.y + 70} textAnchor="middle">
+            <text x={dest.x} y={dest.y + 70} textAnchor="middle">
               {NAME_STORY.sixth}
             </text>
           </g>

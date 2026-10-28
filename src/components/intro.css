@@ -158,28 +158,50 @@
     font-size: 0.95rem;
   }
 }
+/* Phone: no pin. The copy reads in full, then the portrait map draws as it scrolls up. */
 @media (max-width: 600px) {
+  .ns {
+    height: auto;
+  }
+  .ns__sticky {
+    position: static;
+    display: block;
+    height: auto;
+    padding: 24px var(--gutter) 64px;
+  }
   .ns__body {
-    display: none;
+    font-size: 1rem;
   }
-  /* Small screens: keep only the labels that carry the story, at a readable size. */
-  .ns-label {
-    display: none;
+  .ns__map {
+    display: block;
+    width: min(100%, 420px);
+    margin: 28px auto 0;
   }
-  .ns-crowd text {
-    font-size: 30px;
-    transform: translate(-150px, 50px);
+  /* Map text in viewBox units: the map renders at ~0.87 scale, so these land at 12–15px. */
+  .ns__map--portrait .ns-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    fill: rgba(var(--sr-maroon-rgb), 0.78);
+    paint-order: stroke;
+    stroke: var(--sr-cream);
+    stroke-width: 7px;
+    stroke-linejoin: round;
   }
-  .ns-dest text {
-    font-size: 30px;
+  .ns__map--portrait .ns-origin-label {
+    font-size: 15px;
   }
-  .ns-origin-label {
-    font-size: 26px;
+  .ns__map--portrait .ns-crowd text {
+    font-size: 16px;
   }
-  .ns-grey {
-    stroke-width: 3;
+  .ns__map--portrait .ns-dest text {
+    font-size: 17px;
   }
-  .ns-sixth {
-    stroke-width: 9;
+  .ns__map--portrait .ns-grey {
+    stroke-width: 2;
+  }
+  .ns__map--portrait .ns-sixth {
+    stroke-width: 6;
   }
 }

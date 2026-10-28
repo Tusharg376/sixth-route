@@ -349,3 +349,201 @@
     transition-duration: 0.4s;
   }
 }
+
+/* Phone: the project index (ProjectIndex) — a sticky preview window over a list of titles. */
+@media (max-width: 600px) {
+  .work--index {
+    padding-block: var(--section-y) 72px;
+  }
+  .work--index .work__head {
+    margin-bottom: 28px;
+  }
+  .wx__stage {
+    position: relative;
+  }
+  .wx__preview {
+    position: sticky;
+    top: 84px;
+    z-index: 2;
+  }
+  /* Titles slide up behind the window; a strip of section colour hides them under the nav. */
+  .wx__preview::before {
+    content: "";
+    position: absolute;
+    inset: -84px calc(var(--gutter) * -1) auto;
+    height: 92px;
+    background: var(--sr-cream);
+  }
+  .wx__frame {
+    position: relative;
+    height: min(44svh, 112vw);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--sr-night);
+    color: var(--sr-white);
+    isolation: isolate;
+  }
+  .wx__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 0.55s var(--ease-out), transform 1.1s var(--ease-out);
+  }
+  .wx__slide.is-shown {
+    opacity: 1;
+    transform: none;
+  }
+  .wx__slide .art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .wx__frame:active .card__plus {
+    transform: rotate(135deg);
+    background: var(--sr-orange);
+  }
+  .wx__list {
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wx__row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 40px;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 18px 0;
+    border-top: 1px solid var(--line-light);
+    text-align: left;
+    color: var(--sr-night);
+  }
+  .wx__num {
+    align-self: start;
+    padding-top: 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--muted-light);
+    transition: color var(--dur-base);
+  }
+  .wx__text {
+    display: grid;
+    gap: 4px;
+  }
+  .wx__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .wx__tags {
+    font-size: 0.85rem;
+    color: var(--muted-light);
+  }
+  /* The card's "+" in miniature; lights up on the title the preview is showing. */
+  .wx__go {
+    position: relative;
+    justify-self: end;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px var(--line-light);
+    transition: background var(--dur-base), box-shadow var(--dur-base), transform 0.6s var(--ease-out);
+  }
+  .wx__go::before,
+  .wx__go::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    margin: -1px 0 0 -6px;
+    background: var(--sr-night);
+  }
+  .wx__go::after {
+    transform: rotate(90deg);
+  }
+  .wx__row.is-active .wx__num {
+    color: var(--sr-orange);
+  }
+  .wx__row.is-active .wx__go {
+    background: var(--sr-orange);
+    box-shadow: none;
+  }
+  .wx__row:active .wx__go {
+    transform: rotate(135deg);
+  }
+  .wx__end {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 12px;
+    padding: 22px 12px 22px 22px;
+    border-radius: var(--radius-lg);
+    background: var(--sr-maroon);
+    color: var(--sr-white);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .wx__end-dot {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--sr-orange);
+    color: var(--sr-night);
+  }
+  .wx__end-dot svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Case study as a bottom sheet. */
+  .case--sheet {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .case--sheet[open] {
+    animation: sheet-up 0.55s var(--ease-out);
+  }
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  .case--sheet .case__art {
+    min-height: 0;
+    height: 34svh;
+    touch-action: none;
+  }
+  .case__grab {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    z-index: 1;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: rgba(255, 252, 244, 0.7);
+  }
+  .case--sheet .case__body {
+    padding: 24px var(--gutter) 32px;
+  }
+}

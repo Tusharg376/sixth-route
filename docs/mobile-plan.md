@@ -318,8 +318,12 @@ of following the pointer.
 
 1. ✅ **Foundations** (done on `mobile/redesign`): breakpoints, svh/dvh, phone type scale, tap targets, touch states, thumb CTA,
    menu, GPU budget, intro tweaks.
-2. **Rebuilt modules**: Hero, Name story (vertical map), Manifesto (reroute list), What We Do (thumb
-   wheel), Projects (index + preview + sheet), Process (route timeline).
+2. ✅ **Rebuilt modules** (done on `mobile/redesign`): Hero, Name story (vertical map), Manifesto
+   (reroute list), What We Do (thumb wheel), Projects (index + preview + sheet), Process (route
+   timeline). Two changes from the sketches above: the name-story map doesn't pin on phones (copy
+   plus a tall map can't share one screen, so the map draws as it scrolls up instead), and the dial
+   keeps its tab list as a row of dots, so keyboard and screen-reader users still have it. The
+   phone home page measured 15.3 screens after this phase (from 22.4).
 3. **Trims**: About, Sixthroute difference, Proof, FAQ, Footer, Contact, 404, tablet and landscape.
 4. **QA + docs**: an automated audit at 360/390/430/768 px and landscape (overflow, tap targets,
    text size, page length), a check on a real iPhone (Safari) and Android phone (Chrome) through the

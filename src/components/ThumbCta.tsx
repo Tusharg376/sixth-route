@@ -7,7 +7,8 @@ import "./thumbcta.css";
 /**
  * Phones hide the nav's "Start a Project" button, so this one sits within thumb reach instead.
  * One such button on screen at a time: it steps aside whenever another contact CTA is visible
- * (the hero's, the FAQ's, the last project card, the closing section) and over the footer.
+ * (the hero's, the FAQ's, the last project card, the closing section), over the footer, and for
+ * any control that lives at the bottom edge itself (marked data-thumb-clear, e.g. the dial wheel).
  */
 export function ThumbCta() {
   const phone = useMedia(PHONE);
@@ -15,7 +16,7 @@ export function ThumbCta() {
 
   useEffect(() => {
     if (!phone) return;
-    const others = document.querySelectorAll(`a.btn[href="${START_PROJECT.href}"]:not(.thumb__btn), a.card__end, #contact, footer`);
+    const others = document.querySelectorAll(`a.btn[href="${START_PROJECT.href}"]:not(.thumb__btn), a.card__end, a.wx__end, [data-thumb-clear], #contact, footer`);
     const inView = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => (e.isIntersecting ? inView.add(e.target) : inView.delete(e.target)));

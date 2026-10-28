@@ -50,6 +50,7 @@
   :root {
     --fs-display: clamp(2.4rem, 11.5vw, 3.2rem);
     --fs-h2: clamp(2rem, 9vw, 2.6rem);
+    --fs-lead: 1.05rem;
     --fs-body: 1rem;
     --fs-eyebrow: 0.75rem;
     --fs-floor: 0.75rem;

@@ -197,3 +197,81 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Phone: one screen. Detail on top, a row of dots for the eight, and the dial as a wheel half
+   off the bottom edge (pointer at 12 o'clock) that a sideways swipe turns. */
+@media (max-width: 600px) {
+  .caps {
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+  .caps__stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 8px;
+  }
+  .caps__panel {
+    gap: 4px;
+  }
+  /* Room for the longest discipline, so the wheel never jumps as the text changes. */
+  .caps__detail {
+    min-height: 248px;
+    gap: 12px;
+  }
+  .caps__detail h3 {
+    font-size: 2rem;
+  }
+  .caps__body {
+    font-size: 1rem;
+  }
+  .caps__chips li {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  /* The legend stays the tab list (keyboard and screen readers), drawn as dots. */
+  .caps__legend {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .caps__legend button {
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 44px;
+    padding: 0;
+    font-size: 0;
+  }
+  .caps__legend button span {
+    display: none;
+  }
+  .caps__legend button::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 4px;
+    background: rgba(var(--sr-maroon-rgb), 0.22);
+    transition: width var(--dur-base) var(--ease-out), background var(--dur-base);
+  }
+  .caps__legend button.is-active::before {
+    width: 22px;
+    background: var(--sr-orange);
+  }
+  /* Only the top of a 128vw wheel shows: the segment band, the pointer and the edge of the hub. */
+  .dial {
+    order: 2;
+    width: 128vw;
+    max-width: none;
+    height: 44vw;
+    margin: 10px 0 0 calc(50% - 64vw);
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  .caps.is-spinning .dial__ring,
+  .caps.is-spinning .dial__icon {
+    transition: none;
+  }
+}

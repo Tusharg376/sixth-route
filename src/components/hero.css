@@ -211,23 +211,69 @@
     display: none;
   }
 }
+/* Phone: a poster that fits exactly one screen — headline, sphere, accent line, one CTA. */
 @media (max-width: 600px) {
-  .hero__title {
-    font-size: clamp(2.3rem, 11vw, 3.4rem);
-    grid-template-rows: auto minmax(220px, 1fr) auto;
+  .hero,
+  .hero__inner {
+    min-height: 100svh;
+    height: 100svh;
   }
+  .hero__inner {
+    padding-top: 96px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .hero__eyebrow {
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+  /* Headline, sphere and accent as one tight stack, centred in the space left. */
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: clamp(2.3rem, 11vw, 3.4rem);
+  }
+  /* A square up to 76vw that gives way first when the screen is short. */
   .hero__slot {
-    width: 74vw;
-    max-height: 40svh;
+    flex: 0 1 76vw;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1;
+    align-self: center;
+    margin-block: 10px;
+  }
+  .hero__foot {
+    gap: 4px;
+    margin-top: 14px;
+  }
+  /* The intro paragraph says what About says next; on a phone the poster stays short. */
+  .hero__body {
+    display: none;
   }
   .hero__ctas {
     flex-direction: column;
     width: 100%;
+    gap: 2px;
   }
   .hero__ctas .btn {
     justify-content: space-between;
   }
+  /* "Explore Our Work" becomes a quiet cue under the main button. */
   .hero__ctas .btn--ghost {
     justify-content: center;
+    height: 44px;
+    border: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-dark);
+  }
+}
+/* Touch: the sphere spins under a sideways drag; vertical drags still scroll the page. */
+@media (hover: none) {
+  .hero__slot {
+    touch-action: pan-y;
   }
 }

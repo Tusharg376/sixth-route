@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { CAPABILITIES, CAPABILITIES_HEAD } from "../content";
 import { Mark } from "../brand/Logo";
+import { PHONE, useMedia } from "../lib/media";
 import { prefersReducedMotion } from "../lib/motion";
 import { Icon } from "./Icon";
 import "./capabilities.css";
@@ -43,6 +44,11 @@ export function Capabilities() {
   const stage = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  // Phones: the dial becomes a wheel half off the bottom edge, pointer at 12 o'clock, and a
+  // sideways drag turns it under the thumb (it follows the finger, then snaps to a segment).
+  const phone = useMedia(PHONE);
+  const [spin, setSpin] = useState(0); // live drag, in degrees
+  const swipe = useRef<{ id: number; x: number; px: number } | null>(null);
 
   const select = useCallback(
     (i: number) => {
@@ -89,15 +95,42 @@ export function Capabilities() {
     tabs.current[next]?.focus();
   };
 
-  // Base rotation puts segment 0 (drawn at 12 o'clock) at 3 o'clock, facing the panel.
-  const turn = 90 + rot;
+  const onDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (!phone || e.pointerType === "mouse") return;
+    const svg = e.currentTarget.querySelector("svg")!;
+    // Degrees per pixel at the middle of the segment band, so the wheel tracks the finger.
+    const r = (svg.getBoundingClientRect().width * ((R_OUT + R_IN) / 2)) / 128;
+    swipe.current = { id: e.pointerId, x: e.clientX, px: 180 / (Math.PI * r) };
+    setPaused(true);
+  };
+  const onMove = (e: PointerEvent<HTMLDivElement>) => {
+    const s = swipe.current;
+    if (s?.id === e.pointerId) setSpin((e.clientX - s.x) * s.px);
+  };
+  const onUp = (e: PointerEvent<HTMLDivElement>) => {
+    const s = swipe.current;
+    if (s?.id !== e.pointerId) return;
+    const dx = e.clientX - s.x;
+    swipe.current = null;
+    setPaused(false);
+    setSpin(0);
+    if (Math.abs(dx) < 8) return; // a tap: the segment's own click selects it
+    // Turning clockwise brings the previous segment up to the pointer; a short flick is one step.
+    const deg = dx * s.px;
+    const steps = Math.round(deg / (360 / N)) || Math.sign(dx);
+    select(active - steps);
+  };
+
+  // Base rotation puts segment 0 (drawn at 12 o'clock) at 3 o'clock, facing the panel; on a
+  // phone the pointer sits at 12 o'clock instead.
+  const turn = (phone ? 0 : 90) + rot + spin;
   const c = CAPABILITIES[active];
 
   return (
     <section
       id="services"
       ref={root}
-      className={`caps on-light ${auto ? "is-auto" : ""}`}
+      className={`caps on-light ${auto ? "is-auto" : ""} ${spin ? "is-spinning" : ""}`}
       data-nav="light"
     >
       <div className="wrap">
@@ -116,11 +149,23 @@ export function Capabilities() {
         </header>
 
         <div className="caps__stage" ref={stage}>
-          <div className="dial" data-reveal onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
+          <div
+            className="dial"
+            data-reveal
+            data-thumb-clear
+            onPointerEnter={() => setPaused(true)}
+            onPointerLeave={() => setPaused(false)}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+          >
             <svg viewBox="-64 -64 128 128" aria-hidden="true">
               {/* Pointer + the route out to the panel. */}
-              <path className="dial__route" d="M60 0H64" />
-              <path className="dial__notch" d="M58.6 -3.4L62.6 0L58.6 3.4Z" />
+              <g transform={phone ? "rotate(-90)" : undefined}>
+                <path className="dial__route" d="M60 0H64" />
+                <path className="dial__notch" d="M58.6 -3.4L62.6 0L58.6 3.4Z" />
+              </g>
               <circle className="dial__track" r={59.5} />
               <circle key={active} className="dial__timer" r={59.5} style={{ ["--ms" as string]: `${ADVANCE_MS}ms` }} pathLength={1} />
               <g className="dial__ring" style={{ transform: `rotate(${turn}deg)` }}>
