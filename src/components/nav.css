@@ -133,9 +133,10 @@
   transform: translateY(-3px) rotate(-45deg);
 }
 
-/* The menu sits at the bottom of the screen when it fits (margin-top: auto on the links), and
-   starts under the bar and scrolls when it doesn't: bottom-aligning with justify-content would
-   push the overflow up behind the bar, out of reach. */
+/* Links start right under the bar; the contact row (email, socials) drops to the bottom when
+   there's room (margin-top: auto), and the sheet scrolls when there isn't. Never bottom-align the
+   whole sheet with justify-content: on short screens it pushes the overflow up behind the bar,
+   out of reach. */
 .nav__sheet {
   position: fixed;
   inset: 0 0 auto;
@@ -168,7 +169,6 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: auto;
 }
 .nav__sheet nav a {
   display: flex;
@@ -203,6 +203,7 @@
 .nav__reach {
   display: grid;
   gap: 16px;
+  margin-top: auto;
   padding-top: 22px;
   border-top: 1px solid var(--line-dark);
   animation: sheet-in 0.7s var(--ease-out) 0.35s both;

@@ -207,12 +207,23 @@
   position: sticky;
   top: 82px;
   z-index: 2;
+  isolation: isolate;
   display: grid;
   gap: 12px;
   padding: 14px 0 36px;
   margin-inline: calc(var(--gutter) * -1);
   padding-inline: var(--gutter);
   background: linear-gradient(var(--sr-night) 80%, rgba(var(--sr-night-rgb), 0));
+}
+/* Rows that have passed the question would still show behind the see-through nav bar: a strip of
+   night above the question hides them. */
+.mfl__head::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -82px 0 auto;
+  height: 84px;
+  background: var(--sr-night);
 }
 .mfl__q {
   font-family: var(--font-display);
@@ -264,5 +275,8 @@
   .mfl__head {
     position: static;
     background: none;
+  }
+  .mfl__head::before {
+    display: none;
   }
 }
