@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CONTACT_HREF, PROJECTS, PROJECTS_HEAD } from "../content";
 import { gsap, getLenis, prefersReducedMotion } from "../lib/motion";
+import { DESKTOP } from "../lib/media";
 import { ProjectArt } from "./ProjectArt";
 import { ArrowRight, ArrowUpRight } from "./Icon";
 import "./projects.css";
@@ -16,7 +17,7 @@ export function Projects() {
   useEffect(() => {
     if (prefersReducedMotion()) return;
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 861px)", () => {
+    mm.add(DESKTOP, () => {
       const t = track.current!;
       const distance = () => t.scrollWidth - t.parentElement!.clientWidth;
       gsap.to(t, {

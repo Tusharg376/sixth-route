@@ -10,8 +10,10 @@
   width: max-content;
   animation: ticker 42s linear infinite;
 }
-.ticker:hover .ticker__track {
-  animation-play-state: paused;
+@media (hover: hover) {
+  .ticker:hover .ticker__track {
+    animation-play-state: paused;
+  }
 }
 .ticker__run {
   display: flex;

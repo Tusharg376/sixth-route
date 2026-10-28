@@ -59,10 +59,12 @@
   border-bottom: 2px solid var(--sr-orange);
   padding-bottom: 2px;
 }
-.cta__mail a:hover {
-  color: var(--sr-orange);
+@media (hover: hover) {
+  .cta__mail a:hover {
+    color: var(--sr-orange);
+  }
 }
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .cta__actions,
   .cta__row {
     flex-direction: column;

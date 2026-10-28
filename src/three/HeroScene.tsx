@@ -4,6 +4,8 @@ import * as THREE from "three";
 import { buildRouteGeometry } from "./routeGeometry";
 import { SilkRibbon } from "./SilkRibbon";
 import { gsap, prefersReducedMotion } from "../lib/motion";
+import { PHONE, useMedia } from "../lib/media";
+import { mulberry32 } from "../lib/random";
 
 const ORANGE = new THREE.Color("#FF8221");
 const MAROON = new THREE.Color("#2E0809"); // renders as brand maroon #420D0F under the scene lights
@@ -13,6 +15,8 @@ type Props = { slot: RefObject<HTMLElement | null>; started: boolean };
 export default function HeroScene({ slot, started }: Props) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // Phones get a lighter scene: lower pixel ratio, one silk ribbon, coarser mesh, less dust.
+  const lite = useMedia(PHONE);
 
   // Stop rendering once the hero is off screen.
   useEffect(() => {
@@ -29,12 +33,12 @@ export default function HeroScene({ slot, started }: Props) {
         // Render once (compiles shaders) but hold still until the intro hands over, so the
         // opening animation never competes with the 3D scene for the GPU.
         frameloop={visible && started ? "always" : "demand"}
-        dpr={[1, 1.8]}
+        dpr={lite ? [1, 1.5] : [1, 1.8]}
         camera={{ fov: 28, position: [0, 0, 12], near: 0.1, far: 60 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.NoToneMapping, powerPreference: "high-performance" }}
       >
         <Lights />
-        <Stage slot={slot} started={started} />
+        <Stage slot={slot} started={started} lite={lite} />
       </Canvas>
     </div>
   );
@@ -53,7 +57,7 @@ function Lights() {
 }
 
 /** Positions the sphere over the DOM "slot" between the two headline lines and drives all motion. */
-function Stage({ slot, started }: Props) {
+function Stage({ slot, started, lite }: Props & { lite: boolean }) {
   const { size, viewport } = useThree();
   const root = useRef<THREE.Group>(null);
   const silk = useRef<THREE.Group>(null);
@@ -139,15 +143,15 @@ function Stage({ slot, started }: Props) {
     <>
       <group ref={silk}>
         {/* Wide, deep ribbon behind the sphere, entering from the left like the opening ribbon. */}
-        <SilkRibbon reveal={intro} length={span} width={1.45} amp={0.32} freq={0.42} twist={1.25} seed={0.4} lift={0.8} position={[0, 0.05, -1.7]} rotation={[0, 0, -0.1]} />
+        <SilkRibbon reveal={intro} length={span} width={1.45} amp={0.32} freq={0.42} twist={1.25} seed={0.4} lift={0.8} position={[0, 0.05, -1.7]} rotation={[0, 0, -0.1]} segments={lite ? [160, 12] : undefined} />
         {/* Narrow, brighter ribbon crossing it at an angle. */}
-        <SilkRibbon reveal={intro} delay={0.12} length={span} width={0.5} amp={0.45} freq={0.6} twist={2.3} seed={2.2} speed={0.45} lift={1.15} position={[0, -0.25, -0.85]} rotation={[0, 0, 0.16]} />
+        {!lite && <SilkRibbon reveal={intro} delay={0.12} length={span} width={0.5} amp={0.45} freq={0.6} twist={2.3} seed={2.2} speed={0.45} lift={1.15} position={[0, -0.25, -0.85]} rotation={[0, 0, 0.16]} />}
       </group>
       <group ref={root}>
         <group ref={spin}>
           <RouteSphere intro={intro} />
         </group>
-        <Dust />
+        <Dust count={lite ? 80 : 220} />
       </group>
     </>
   );
@@ -188,22 +192,11 @@ function RouteSphere({ intro }: { intro: RefObject<{ p: number }> }) {
   );
 }
 
-// Small seeded PRNG so the dust field is identical on every render.
-function mulberry32(a: number) {
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function Dust() {
+function Dust({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
   const geom = useMemo(() => {
     const rand = mulberry32(6);
-    const n = 220;
+    const n = count;
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       const r = 1.6 + rand() * 3.6;
@@ -216,7 +209,7 @@ function Dust() {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     return g;
-  }, []);
+  }, [count]);
   useFrame((_, dt) => {
     if (ref.current) ref.current.rotation.y += dt * 0.02;
   });

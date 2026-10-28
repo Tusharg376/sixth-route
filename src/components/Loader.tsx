@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import { gsap, prefersReducedMotion } from "../lib/motion";
+import { matches, PHONE, TOUCH, useMedia } from "../lib/media";
 import { ROUTE_OUTLINE } from "../brand/logoData";
 import { COIL_RIBBON, ROUTE_RIBBON, coilRibbon, routeRibbon } from "../brand/ribbons";
 import "./loader.css";
@@ -11,8 +12,26 @@ import "./loader.css";
  * the 6 darkens to maroon -> the exact mark takes over and glows -> the wordmark rises ->
  * the lockup flies into the nav slot while the curtain lifts.
  */
+// The opening plays once per browser tab; `?intro` replays it, `?nointro` skips it.
+const SEEN = "sr-intro-seen";
+const seen = () => {
+  try {
+    return sessionStorage.getItem(SEEN) === "1";
+  } catch {
+    return false;
+  }
+};
+const markSeen = () => {
+  try {
+    sessionStorage.setItem(SEEN, "1");
+  } catch {
+    /* storage blocked: the intro simply plays again next time */
+  }
+};
+
 export function Loader({ onDone }: { onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
+  const touch = useMedia(TOUCH);
   const lockup = useRef<HTMLDivElement>(null);
   const clip = useId();
   const done = useRef(onDone);
@@ -26,10 +45,14 @@ export function Loader({ onDone }: { onDone: () => void }) {
     const target = document.querySelector<HTMLElement>("[data-nav-lockup]");
     const finish = () => {
       document.body.classList.remove("is-loading");
+      markSeen();
       done.current();
     };
-    // Skip the opening when motion is reduced, or when arriving at a section from another page.
-    const skip = prefersReducedMotion() || location.hash.length > 1 || new URLSearchParams(location.search).has("nointro");
+    // Skip the opening when motion is reduced, when arriving at a section from another page, or
+    // when this tab has already seen it.
+    const params = new URLSearchParams(location.search);
+    const skip =
+      prefersReducedMotion() || location.hash.length > 1 || params.has("nointro") || (seen() && !params.has("intro"));
     if (!target || skip) {
       finish();
       return;
@@ -46,7 +69,9 @@ export function Loader({ onDone }: { onDone: () => void }) {
       const m = mark.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const sA = (Math.min(vw, vh) * 0.3) / m.width;
+      // On a phone the mark gets a larger share of the (narrow) screen.
+      const phone = matches(PHONE);
+      const sA = (Math.min(vw, vh) * (phone ? 0.4 : 0.3)) / m.width;
       const at = (lx: number, ly: number, s: number) => ({
         x: vw / 2 - (r.left + lx * s),
         y: vh / 2 - (r.top + ly * s),
@@ -117,6 +142,9 @@ export function Loader({ onDone }: { onDone: () => void }) {
         .to(q(".ld-glow"), { opacity: 0, duration: 0.6 }, 4.75)
         .to(q(".ld-curtain"), { opacity: 0, duration: 0.95, ease: "power2.inOut" }, 4.7);
 
+      // Phones run the same sequence a little quicker.
+      if (phone) tl.timeScale(1.12);
+
       const skipIntro = () => tl.progress(1);
       el.addEventListener("click", skipIntro);
       window.addEventListener("keydown", skipIntro, { once: true });
@@ -137,7 +165,7 @@ export function Loader({ onDone }: { onDone: () => void }) {
         <div className="ld-ember ld-ember--a" />
         <div className="ld-ember ld-ember--b" />
         <p className="ld-tagline">Beyond the obvious.</p>
-        <p className="ld-skip">Click to skip</p>
+        <p className="ld-skip">{touch ? "Tap to skip" : "Click to skip"}</p>
       </div>
 
       <div className="ld-lockup lockup" ref={lockup}>

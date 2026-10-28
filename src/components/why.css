@@ -6,6 +6,31 @@
   color: var(--sr-white);
   padding-block: var(--section-y);
 }
+/* Phone stand-in for the WebGL constellation (StarMap.tsx). */
+.starmap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.starmap__links line {
+  stroke: rgba(var(--sr-orange-rgb), 0.24);
+  stroke-width: 0.8;
+}
+.starmap__star {
+  fill: rgba(var(--sr-orange-rgb), 0.7);
+}
+.starmap__star.is-glow {
+  fill: var(--sr-orange);
+  filter: drop-shadow(0 0 5px rgba(255, 130, 33, 0.9));
+  animation: star-breathe 4.2s ease-in-out var(--d, 0s) infinite;
+}
+@keyframes star-breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
 .why__veil {
   position: absolute;
   inset: 0;
@@ -63,7 +88,7 @@
 .why__points p {
   color: var(--muted-dark);
 }
-@media (max-width: 860px) {
+@media (max-width: 1024px) {
   .why__points {
     grid-template-columns: 1fr;
   }

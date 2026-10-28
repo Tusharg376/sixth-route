@@ -8,8 +8,8 @@
 }
 .process__stage {
   --stick: 320px;
-  --card-h: clamp(380px, calc(100vh - var(--stick) - 28px), 470px);
-  --hold: 38vh;
+  --card-h: clamp(380px, calc(100svh - var(--stick) - 28px), 470px);
+  --hold: 38svh;
   position: relative;
 }
 .process__rail {
@@ -135,7 +135,7 @@ circle.sa-draw {
   transform: none;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .process__rail {
     position: static;
   }
@@ -147,7 +147,7 @@ circle.sa-draw {
     padding-top: 0 !important;
   }
   .process__track {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
   }
   .process__col {
@@ -161,5 +161,10 @@ circle.sa-draw {
     top: 0;
     height: auto;
     min-height: 400px;
+  }
+}
+@media (max-width: 600px) {
+  .process__track {
+    grid-template-columns: 1fr;
   }
 }

@@ -32,8 +32,10 @@
   fill: var(--sr-maroon);
   transition: fill 0.5s var(--ease-out);
 }
-.dial__seg:hover path {
-  fill: #5a1a1c;
+@media (hover: hover) {
+  .dial__seg:hover path {
+    fill: #5a1a1c;
+  }
 }
 .dial__seg.is-active path {
   fill: var(--sr-orange);
@@ -163,19 +165,23 @@
   transition: color var(--dur-fast);
 }
 .caps__legend button span {
-  font-size: 0.72rem;
+  font-size: max(0.72rem, var(--fs-floor));
   font-weight: 600;
   color: var(--sr-orange);
 }
-.caps__legend button:hover,
 .caps__legend button.is-active {
   color: var(--sr-night);
+}
+@media (hover: hover) {
+  .caps__legend button:hover {
+    color: var(--sr-night);
+  }
 }
 .caps__legend button.is-active {
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .caps__stage {
     grid-template-columns: 1fr;
   }
@@ -186,7 +192,7 @@
     min-height: 0;
   }
 }
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .caps__legend {
     grid-template-columns: 1fr;
   }

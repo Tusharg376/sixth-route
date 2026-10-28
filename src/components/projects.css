@@ -5,12 +5,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 100vh;
-  padding-block: clamp(96px, 12vh, 130px) clamp(28px, 4vh, 44px);
+  min-height: 100svh;
+  padding-block: clamp(96px, 12svh, 130px) clamp(28px, 4svh, 44px);
   overflow: hidden;
 }
 .work__head {
-  margin-bottom: clamp(28px, 4vh, 48px);
+  margin-bottom: clamp(28px, 4svh, 48px);
 }
 .work__aside {
   display: grid;
@@ -38,7 +38,7 @@
 }
 
 .card {
-  --h: clamp(380px, calc(100vh - 420px), 600px);
+  --h: clamp(380px, calc(100svh - 420px), 600px);
   position: relative;
   flex: none;
   width: calc(var(--h) * 0.66);
@@ -59,8 +59,10 @@
 .card__art {
   transition: transform 1.1s var(--ease-out);
 }
-.card:hover .card__art {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .card:hover .card__art {
+    transform: scale(1.05);
+  }
 }
 .card__art::after {
   content: "";
@@ -88,7 +90,7 @@
   color: var(--sr-white);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.68rem;
+  font-size: max(0.68rem, var(--fs-floor));
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -122,10 +124,15 @@
 .card__plus::after {
   transform: rotate(90deg);
 }
-.card:hover .card__plus,
 .card__hit:focus-visible ~ .card__plus {
   transform: rotate(135deg);
   background: var(--sr-orange);
+}
+@media (hover: hover) {
+  .card:hover .card__plus {
+    transform: rotate(135deg);
+    background: var(--sr-orange);
+  }
 }
 .card__meta {
   position: absolute;
@@ -169,7 +176,7 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-top: clamp(20px, 3vh, 32px);
+  margin-top: clamp(20px, 3svh, 32px);
 }
 .work__bar {
   position: relative;
@@ -190,7 +197,7 @@
 /* Case detail */
 .case {
   width: min(1100px, calc(100vw - 32px));
-  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
   padding: 0;
   border: 0;
   border-radius: var(--radius-lg);
@@ -293,12 +300,14 @@
   font-size: 1.6rem;
   line-height: 1;
 }
-.case__close:hover {
-  background: var(--sr-orange);
-  color: var(--sr-night);
+@media (hover: hover) {
+  .case__close:hover {
+    background: var(--sr-orange);
+    color: var(--sr-night);
+  }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1024px) {
   .work__pin {
     min-height: 0;
     padding-block: var(--section-y) 48px;
@@ -326,5 +335,17 @@
   }
   .case__art {
     min-height: 300px;
+  }
+}
+
+/* Touch: there is no hover to preview a card, so the "+" answers the press instead. */
+@media (hover: none) {
+  .card:active .card__plus {
+    transform: rotate(135deg);
+    background: var(--sr-orange);
+  }
+  .card:active .card__art {
+    transform: scale(1.03);
+    transition-duration: 0.4s;
   }
 }

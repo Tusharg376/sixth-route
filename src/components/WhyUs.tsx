@@ -1,7 +1,9 @@
 import { lazy } from "react";
 import { WHY } from "../content";
+import { PHONE, useMedia } from "../lib/media";
 import { BrandTint } from "./BrandTint";
 import { Icon } from "./Icon";
+import { StarMap } from "./StarMap";
 import "./why.css";
 
 // ThreeUI effect, loaded only when the section approaches the viewport.
@@ -10,11 +12,16 @@ const ConstellationField = lazy(() =>
 );
 
 export function WhyUs() {
+  const phone = useMedia(PHONE);
   return (
     <section className="why on-dark" data-nav="dark" aria-labelledby="why-title">
-      <BrandTint strength={0.9}>
-        <ConstellationField mode="dark" speed={0.6} />
-      </BrandTint>
+      {phone ? (
+        <StarMap />
+      ) : (
+        <BrandTint strength={0.9}>
+          <ConstellationField mode="dark" speed={0.6} />
+        </BrandTint>
+      )}
       <div className="why__veil" />
       <div className="wrap why__inner">
         <p className="eyebrow" data-reveal>

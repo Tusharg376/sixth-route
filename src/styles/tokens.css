@@ -26,6 +26,8 @@
   --fs-body: 1.0625rem;
   --fs-small: 0.875rem;
   --fs-eyebrow: 0.72rem;
+  /* Smallest text anywhere; tiny labels use max(their size, --fs-floor). Raised on phones. */
+  --fs-floor: 0px;
 
   --radius-sm: 14px;
   --radius-lg: 22px;
@@ -40,4 +42,16 @@
   --dur-fast: 240ms;
   --dur-base: 600ms;
   --dur-slow: 1200ms;
+}
+
+/* Layout tiers, mirrored in src/lib/media.ts: phone ≤ 600px, compact (tablet + phone) ≤ 1024px,
+   desktop ≥ 1025px. Touch behaviour keys off (hover: none), not width. */
+@media (max-width: 600px) {
+  :root {
+    --fs-display: clamp(2.4rem, 11.5vw, 3.2rem);
+    --fs-h2: clamp(2rem, 9vw, 2.6rem);
+    --fs-body: 1rem;
+    --fs-eyebrow: 0.75rem;
+    --fs-floor: 0.75rem;
+  }
 }

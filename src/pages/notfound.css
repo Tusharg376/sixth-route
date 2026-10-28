@@ -95,9 +95,11 @@
   border-bottom: 1px solid transparent;
   transition: color var(--dur-fast), border-color var(--dur-fast);
 }
-.nf__routes a:hover {
-  color: var(--sr-orange);
-  border-color: var(--sr-orange);
+@media (hover: hover) {
+  .nf__routes a:hover {
+    color: var(--sr-orange);
+    border-color: var(--sr-orange);
+  }
 }
 @keyframes nf-in {
   from {

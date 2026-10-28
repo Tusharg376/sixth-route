@@ -71,7 +71,7 @@
 .ld-skip {
   position: absolute;
   right: var(--gutter);
-  top: clamp(24px, 4vh, 36px);
+  top: clamp(24px, 4svh, 36px);
   font-size: 0.75rem;
   color: rgba(var(--sr-white-rgb), 0.3);
 }

@@ -81,7 +81,9 @@ export function Footer() {
         <div className="footer__legal">
           <span>© {YEAR} Sixth Route. All rights reserved.</span>
           <span className="footer__tag">Beyond the obvious.</span>
-          <a href="#top">Back to top ↑</a>
+          <a href="#top" className="tap">
+            Back to top ↑
+          </a>
         </div>
       </div>
 

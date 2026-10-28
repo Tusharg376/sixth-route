@@ -54,8 +54,10 @@
   color: var(--sr-white);
   transition: color var(--dur-fast);
 }
-.footer__col a:hover {
-  color: var(--sr-orange);
+@media (hover: hover) {
+  .footer__col a:hover {
+    color: var(--sr-orange);
+  }
 }
 
 .footer__legal {
@@ -68,14 +70,16 @@
   font-size: 0.85rem;
   color: var(--muted-dark);
 }
-.footer__legal a:hover {
-  color: var(--sr-orange);
+@media (hover: hover) {
+  .footer__legal a:hover {
+    color: var(--sr-orange);
+  }
 }
 .footer__tag {
   font-family: var(--font-display);
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: max(0.7rem, var(--fs-floor));
 }
 
 /* Giant wordmark rising from the bottom edge. */
@@ -107,13 +111,27 @@
   font-weight: 300;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .footer__cols {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .footer__cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Touch: every footer link is a full 44px row. */
+@media (hover: none) {
+  .footer__col ul {
+    gap: 0;
+  }
+  .footer__col a {
+    min-height: 44px;
+  }
+  .footer__col a:active,
+  .footer__legal a:active {
+    color: var(--sr-orange);
   }
 }

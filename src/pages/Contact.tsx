@@ -2,11 +2,9 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { BriefForm } from "../components/BriefForm";
 import { ArrowUpRight } from "../components/Icon";
-import { CONTACT_PAGE, EMAIL, FOOTER } from "../content";
+import { CONTACT_PAGE, EMAIL, SOCIAL } from "../content";
 import { useReveal, useSmoothScroll } from "../lib/motion";
 import "./contact.css";
-
-const SOCIAL = FOOTER.columns.find((c) => c.title === "Social")?.links ?? [];
 
 export default function Contact() {
   useSmoothScroll();
@@ -61,7 +59,7 @@ export default function Contact() {
               </div>
               <div className="ct-block" data-reveal style={{ ["--reveal-delay" as string]: "100ms" }}>
                 <p className="eyebrow">Prefer email?</p>
-                <a className="ct-mail" href={`mailto:${EMAIL}`}>
+                <a className="ct-mail tap" href={`mailto:${EMAIL}`}>
                   {EMAIL}
                 </a>
               </div>
