@@ -79,11 +79,14 @@ type Props = {
   lift?: number;
   reveal: RefObject<{ p: number }>;
   delay?: number;
+  /** Mesh resolution along and across the ribbon. */
+  segments?: [number, number];
 } & Omit<ThreeElements["mesh"], "args">;
 
-export function SilkRibbon({ length, width, amp = 0.35, freq = 0.45, twist = 1.1, seed = 0, speed = 0.35, lift = 1, reveal, delay = 0, ...mesh }: Props) {
+export function SilkRibbon({ length, width, amp = 0.35, freq = 0.45, twist = 1.1, seed = 0, speed = 0.35, lift = 1, reveal, delay = 0, segments = [360, 20], ...mesh }: Props) {
   const mat = useRef<THREE.ShaderMaterial>(null);
-  const geom = useMemo(() => new THREE.PlaneGeometry(1, 1, 360, 20), []);
+  const [along, across] = segments;
+  const geom = useMemo(() => new THREE.PlaneGeometry(1, 1, along, across), [along, across]);
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },

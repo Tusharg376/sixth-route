@@ -74,9 +74,11 @@
   transform-origin: right;
   transition: transform var(--dur-base) var(--ease-out);
 }
-.nav__links a:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+@media (hover: hover) {
+  .nav__links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 .nav--dark .nav__links {
   color: rgba(var(--sr-white-rgb), 0.82);
@@ -131,17 +133,34 @@
   transform: translateY(-3px) rotate(-45deg);
 }
 
+/* Links start right under the bar; the contact row (email, socials) drops to the bottom when
+   there's room (margin-top: auto), and the sheet scrolls when there isn't. Never bottom-align the
+   whole sheet with justify-content: on short screens it pushes the overflow up behind the bar,
+   out of reach. */
 .nav__sheet {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto;
+  height: 100dvh;
   z-index: -1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 40px;
-  padding: 120px var(--gutter) 48px;
-  background: var(--sr-night);
+  gap: clamp(18px, 3.5svh, 36px);
+  padding: 112px var(--gutter) calc(28px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(70vmax 70vmax at 0% 100%, rgba(var(--sr-orange-rgb), 0.14), rgba(var(--sr-orange-rgb), 0) 70%),
+    var(--sr-night);
   pointer-events: auto;
+}
+/* While it's open the bar gets a solid backing, so a scrolled menu passes cleanly beneath it. */
+.nav.is-open::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: 100px;
+  background: linear-gradient(var(--sr-night) 76%, rgba(var(--sr-night-rgb), 0));
+  pointer-events: none;
 }
 .nav__sheet[hidden] {
   display: none;
@@ -149,22 +168,74 @@
 .nav__sheet nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 .nav__sheet nav a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.2rem, 10vw, 3.4rem);
+  font-size: clamp(2rem, 8.6vw, 3.4rem);
+  line-height: 1.15;
   letter-spacing: -0.04em;
   color: var(--sr-white);
   animation: sheet-in 0.7s var(--ease-out) both;
   animation-delay: calc(var(--i) * 50ms);
 }
-.nav__sheet nav a:hover {
+@media (hover: hover) {
+  .nav__sheet nav a:hover {
+    color: var(--sr-orange);
+  }
+}
+.nav__num {
+  min-width: 1.8em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   color: var(--sr-orange);
+  transform: translateY(-1.1em);
 }
 .nav__sheet .btn {
   align-self: flex-start;
+  flex: none;
+}
+.nav__reach {
+  display: grid;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-dark);
+  animation: sheet-in 0.7s var(--ease-out) 0.35s both;
+}
+.nav__mail {
+  justify-self: start;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--sr-white);
+}
+.nav__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav__social a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1px var(--line-dark);
+  font-size: 0.85rem;
+  color: rgba(var(--sr-white-rgb), 0.82);
+}
+.nav__social a:active,
+.nav__mail:active {
+  color: var(--sr-orange);
 }
 @keyframes sheet-in {
   from {
@@ -173,7 +244,7 @@
   }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1024px) {
   .nav__links {
     display: none;
   }
@@ -185,11 +256,17 @@
     margin-left: 0;
   }
 }
-@media (max-width: 680px) {
+@media (max-width: 600px) {
   .nav__cta {
     display: none;
   }
   .nav__burger {
     margin-left: auto;
+  }
+}
+
+@media (hover: none) {
+  .nav__sheet nav a:active {
+    color: var(--sr-orange);
   }
 }

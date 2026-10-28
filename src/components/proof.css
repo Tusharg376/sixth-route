@@ -38,10 +38,12 @@
   color: var(--sr-maroon);
   transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
 }
-.proof__list a:hover {
-  background: var(--sr-night);
-  color: var(--sr-white);
-  transform: translateX(6px);
+@media (hover: hover) {
+  .proof__list a:hover {
+    background: var(--sr-night);
+    color: var(--sr-white);
+    transform: translateX(6px);
+  }
 }
 .proof__text {
   display: grid;
@@ -59,11 +61,15 @@
   color: var(--muted-light);
   transition: color var(--dur-base);
 }
-.proof__list a:hover strong {
-  color: var(--sr-white);
+@media (hover: hover) {
+  .proof__list a:hover strong {
+    color: var(--sr-white);
+  }
 }
-.proof__list a:hover .proof__text span {
-  color: var(--muted-dark);
+@media (hover: hover) {
+  .proof__list a:hover .proof__text span {
+    color: var(--muted-dark);
+  }
 }
 .proof__go {
   display: grid;
@@ -74,13 +80,55 @@
   background: var(--sr-orange);
   color: var(--sr-night);
 }
-@media (max-width: 860px) {
-  .proof__grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 1024px) {
   .proof__list a {
     grid-template-columns: 44px minmax(0, 1fr) 36px;
     padding: 18px;
     gap: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .proof__grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .proof__list {
+    gap: 0;
+  }
+  .proof__list a {
+    grid-template-columns: 32px minmax(0, 1fr) 36px;
+    padding: 16px 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    border-top: 1px solid var(--line-light);
+  }
+  .proof__list a > svg {
+    width: 32px;
+    height: 32px;
+  }
+  .proof__go {
+    width: 36px;
+    height: 36px;
+  }
+  .proof__text strong {
+    font-size: 1.05rem;
+  }
+  .proof__text span {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+@media (hover: none) {
+  .proof__list a:active {
+    background: var(--sr-night);
+    color: var(--sr-white);
+  }
+  .proof__list a:active strong {
+    color: var(--sr-white);
+  }
+  .proof__list a:active .proof__text span {
+    color: var(--muted-dark);
   }
 }

@@ -38,7 +38,7 @@ export default function NotFound() {
           <nav className="nf__routes" aria-label="Popular pages">
             <span>Popular routes</span>
             {NOT_FOUND.links.map((l) => (
-              <a key={l.label} href={l.href} {...cheer}>
+              <a key={l.label} href={l.href} className="tap" {...cheer}>
                 {l.label}
               </a>
             ))}

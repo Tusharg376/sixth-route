@@ -8,8 +8,8 @@
 }
 .process__stage {
   --stick: 320px;
-  --card-h: clamp(380px, calc(100vh - var(--stick) - 28px), 470px);
-  --hold: 38vh;
+  --card-h: clamp(380px, calc(100svh - var(--stick) - 28px), 470px);
+  --hold: 38svh;
   position: relative;
 }
 .process__rail {
@@ -124,42 +124,139 @@ circle.sa-draw {
 .sa-dot.is-on {
   fill: var(--sr-maroon);
 }
-.pcard.is-in .sa-draw {
+.pcard.is-in .sa-draw,
+.ptl__step.is-on .sa-draw {
   stroke-dashoffset: 0;
 }
-.pcard.is-in circle.sa-draw {
+.pcard.is-in circle.sa-draw,
+.ptl__step.is-on circle.sa-draw {
   opacity: 1;
   transform: none;
 }
-.pcard.is-in .sa-dot {
+.pcard.is-in .sa-dot,
+.ptl__step.is-on .sa-dot {
   transform: none;
 }
 
-@media (max-width: 960px) {
-  .process__rail {
-    position: static;
+
+/* Phones and tablets: the route timeline (ProcessTimeline). */
+.process--timeline .process__head {
+  position: static;
+  margin-bottom: 40px;
+  padding-bottom: 0;
+}
+.ptl {
+  --p: 0;
+  --tail: 0px;
+  position: relative;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ptl::before,
+.ptl::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 12px;
+  bottom: var(--tail);
+  width: 2px;
+  border-radius: 1px;
+  background: var(--line-dark);
+}
+.ptl::after {
+  background: var(--sr-orange);
+  box-shadow: 0 0 12px rgba(255, 130, 33, 0.55);
+  transform: scaleY(var(--p));
+  transform-origin: top;
+}
+.ptl__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 92px;
+  column-gap: 16px;
+  row-gap: 10px;
+  padding-bottom: 44px;
+}
+.ptl__step:last-child {
+  padding-bottom: 0;
+}
+.ptl__node {
+  position: relative;
+  z-index: 1;
+  grid-row: 1;
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--sr-night);
+  box-shadow: inset 0 0 0 2px rgba(var(--sr-white-rgb), 0.28);
+  transition: background var(--dur-base), box-shadow var(--dur-base);
+}
+.ptl__step.is-on .ptl__node {
+  background: var(--sr-orange);
+  box-shadow: 0 0 0 5px rgba(var(--sr-orange-rgb), 0.2), 0 0 16px rgba(255, 130, 33, 0.7);
+}
+.ptl__head {
+  display: grid;
+  gap: 6px;
+}
+.ptl__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--muted-dark);
+  transition: color var(--dur-base);
+}
+.ptl__step.is-on .ptl__num {
+  color: var(--sr-orange);
+}
+.ptl__head h3 {
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+.ptl__step > p {
+  grid-column: 2 / -1;
+  color: var(--muted-dark);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+/* The step art, redrawn for the dark page: orange route, cream points. */
+.ptl .step-art {
+  align-self: start;
+  width: 92px;
+}
+.ptl .sa-draw {
+  stroke: var(--sr-orange);
+}
+.ptl .sa-route {
+  stroke-width: 7;
+}
+.ptl .sa-dot {
+  fill: var(--sr-night);
+  stroke: var(--sr-cream);
+  stroke-width: 3;
+}
+.ptl .sa-dot.is-on {
+  fill: var(--sr-cream);
+}
+@media (min-width: 601px) {
+  .ptl__step {
+    grid-template-columns: 16px minmax(0, 1fr) 160px;
+    column-gap: 24px;
+    padding-bottom: 56px;
   }
-  .process__head {
-    position: static;
-    margin-bottom: 40px;
+  .ptl .step-art {
+    width: 160px;
   }
-  .process__track {
-    padding-top: 0 !important;
+  .ptl__head h3 {
+    font-size: 1.6rem;
   }
-  .process__track {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .process__col {
-    padding: 0;
-  }
-  .process__col::after {
-    display: none;
-  }
-  .pcard {
-    position: relative;
-    top: 0;
-    height: auto;
-    min-height: 400px;
+  .ptl__step > p {
+    grid-column: 2;
+    max-width: 52ch;
+    font-size: 1.05rem;
   }
 }

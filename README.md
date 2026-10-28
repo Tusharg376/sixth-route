@@ -5,7 +5,7 @@ ScrollTrigger + Lenis, and two [ThreeUI](https://threeui.com) effects recoloured
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173  (add ?nointro to skip the opening animation)
+npm run dev      # http://localhost:5173  (?nointro skips the opening, ?intro replays it, ?poster shows the low-power hero)
 npm run build    # production build in dist/
 ```
 
@@ -31,8 +31,9 @@ toolbar at it. Leave notes, then ask Claude to "check my Agentation notes"
 (`agentation_get_all_pending`). Run `npx agentation-mcp doctor` if notes don't arrive. Without a
 running server the toolbar still works locally — use its copy button.
 
-**Brand rules live in [design.md](design.md)** — colours, type, logo, motion, voice. Read it before
-changing anything visual.
+**Brand rules live in [design.md](design.md)** — colours, type, logo, motion, voice, and the mobile
+and touch rules (§10: tiers, phone versions of each module, performance budget, how to test on a
+real phone). Read it before changing anything visual.
 
 ## Structure
 
@@ -43,7 +44,8 @@ changing anything visual.
 | `src/brand/` | Logo geometry traced from the Figma master, `Mark` / `Wordmark` / `Lockup`. |
 | `src/three/` | Hero scene: the mark as a sphere with the route ribbon, plus silk ribbons (`SilkRibbon.tsx`). |
 | `src/components/Loader.tsx` | Opening ribbon sequence (`src/brand/ribbons.ts`) → logo flies to the nav. |
-| `src/components/*` | One component + stylesheet per section. |
+| `src/components/*` | One component + stylesheet per section (phone/tablet variants live in the same file). |
+| `src/lib/media.ts` | Layout tiers (`PHONE`, `COMPACT`, `DESKTOP`, `TOUCH`, `LANDSCAPE_PHONE`), `useMedia`, low-power check. |
 | `src/pages/` + `src/entries/` | `Home`, `Contact`, `NotFound`; one entry per HTML page (`src/mount.tsx` bootstraps). |
 
 Sections: Loader · Nav · Hero · Disciplines ticker · About + name story · Manifesto (reroutes) ·

@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { CONTACT_HREF, CTA, EMAIL } from "../content";
+import { TOUCH, useMedia } from "../lib/media";
 import { BrandTint } from "./BrandTint";
 import { ArrowRight, ArrowUpRight } from "./Icon";
 import "./cta.css";
@@ -10,10 +11,12 @@ const RibbonFieldBackground = lazy(() =>
 );
 
 export function FinalCta() {
+  // No pointer to follow on touch screens; keep the field drifting on its own.
+  const touch = useMedia(TOUCH);
   return (
     <section id="contact" className="cta on-dark" data-nav="dark" aria-labelledby="cta-title">
       <BrandTint strength={0.95}>
-        <RibbonFieldBackground speed={0.7} pointerAmount={0.6} brightness={1.25} />
+        <RibbonFieldBackground speed={0.7} pointerAmount={touch ? 0 : 0.6} brightness={1.25} />
       </BrandTint>
       <div className="cta__veil" />
       <div className="wrap cta__inner">
@@ -39,7 +42,9 @@ export function FinalCta() {
           </div>
           <div className="cta__mail">
             <p>Or write to us</p>
-            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            <a href={`mailto:${EMAIL}`} className="tap">
+              {EMAIL}
+            </a>
           </div>
         </div>
       </div>

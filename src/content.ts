@@ -11,6 +11,8 @@ export const NAV_LINKS = [
 ];
 
 export const CONTACT_HREF = "/contact/";
+/** The standing call to action (nav button, phone thumb button). */
+export const START_PROJECT = { label: "Start a Project", href: CONTACT_HREF };
 export const EMAIL = "hello@sixthroute.com"; // TODO: confirm the professional email address.
 
 export const HERO = {
@@ -351,3 +353,6 @@ export const NOT_FOUND = {
     { label: "Contact", href: "/contact/" },
   ],
 };
+
+/** Social profiles (the footer's "Social" column), reused by the menu and the contact page. */
+export const SOCIAL = FOOTER.columns.find((c) => c.title === "Social")?.links ?? [];

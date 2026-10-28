@@ -4,6 +4,8 @@ import * as THREE from "three";
 import { buildRouteGeometry } from "./routeGeometry";
 import { SilkRibbon } from "./SilkRibbon";
 import { gsap, prefersReducedMotion } from "../lib/motion";
+import { PHONE, useMedia } from "../lib/media";
+import { mulberry32 } from "../lib/random";
 
 const ORANGE = new THREE.Color("#FF8221");
 const MAROON = new THREE.Color("#2E0809"); // renders as brand maroon #420D0F under the scene lights
@@ -13,6 +15,8 @@ type Props = { slot: RefObject<HTMLElement | null>; started: boolean };
 export default function HeroScene({ slot, started }: Props) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // Phones get a lighter scene: lower pixel ratio, one silk ribbon, coarser mesh, less dust.
+  const lite = useMedia(PHONE);
 
   // Stop rendering once the hero is off screen.
   useEffect(() => {
@@ -29,12 +33,12 @@ export default function HeroScene({ slot, started }: Props) {
         // Render once (compiles shaders) but hold still until the intro hands over, so the
         // opening animation never competes with the 3D scene for the GPU.
         frameloop={visible && started ? "always" : "demand"}
-        dpr={[1, 1.8]}
+        dpr={lite ? [1, 1.5] : [1, 1.8]}
         camera={{ fov: 28, position: [0, 0, 12], near: 0.1, far: 60 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.NoToneMapping, powerPreference: "high-performance" }}
       >
         <Lights />
-        <Stage slot={slot} started={started} />
+        <Stage slot={slot} started={started} lite={lite} />
       </Canvas>
     </div>
   );
@@ -53,13 +57,15 @@ function Lights() {
 }
 
 /** Positions the sphere over the DOM "slot" between the two headline lines and drives all motion. */
-function Stage({ slot, started }: Props) {
+function Stage({ slot, started, lite }: Props & { lite: boolean }) {
   const { size, viewport } = useThree();
   const root = useRef<THREE.Group>(null);
   const silk = useRef<THREE.Group>(null);
   const spin = useRef<THREE.Group>(null);
   const intro = useRef({ p: prefersReducedMotion() ? 1 : 0 });
   const pointer = useRef({ x: 0, y: 0 });
+  // Touch spin: a sideways drag on the sphere turns it; it coasts, then settles on the mark.
+  const drag = useRef({ on: false, x: 0, t: 0, vel: 0, off: 0 });
   const layout = useRef({ x: 0, y: 0, r: 1 });
   // Ribbons must run past both screen edges whatever the sphere's size (in sphere radii).
   const [span, setSpan] = useState(40);
@@ -93,12 +99,47 @@ function Stage({ slot, started }: Props) {
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
+      // A finger isn't a cursor: touches would leave the sphere tilted at the last tap.
+      if (e.pointerType === "touch") return;
       pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.current.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
+
+  useEffect(() => {
+    const el = slot.current;
+    if (!el) return;
+    const d = drag.current;
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      Object.assign(d, { on: true, x: e.clientX, t: e.timeStamp, vel: 0 });
+    };
+    const move = (e: PointerEvent) => {
+      if (!d.on) return;
+      const turn = (e.clientX - d.x) * 0.012;
+      d.vel = turn / Math.max((e.timeStamp - d.t) / 1000, 0.008);
+      d.off += turn;
+      d.x = e.clientX;
+      d.t = e.timeStamp;
+    };
+    const up = () => {
+      // A finger that stopped before lifting shouldn't fling the sphere.
+      if (performance.now() - d.t > 90) d.vel = 0;
+      d.on = false;
+    };
+    el.addEventListener("pointerdown", down);
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    return () => {
+      el.removeEventListener("pointerdown", down);
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+    };
+  }, [slot]);
 
   useEffect(() => {
     if (!started || intro.current.p === 1) return;
@@ -127,10 +168,22 @@ function Stage({ slot, started }: Props) {
       silk.current.scale.setScalar(r);
     }
 
+    // Touch spin: coast with friction, then ease round to the nearest full turn so the 6 faces
+    // the viewer again.
+    const d = drag.current;
+    if (!d.on) {
+      d.off += d.vel * dt;
+      d.vel *= Math.pow(0.06, dt);
+      if (Math.abs(d.vel) < 0.8) {
+        const home = Math.round(d.off / (Math.PI * 2)) * Math.PI * 2;
+        d.off += (home - d.off) * (1 - Math.pow(0.03, dt));
+      }
+    }
+
     // Spin into alignment on entry, then follow the cursor; scrolling turns the route away.
     const k = 1 - Math.pow(0.0015, dt);
     const tx = (1 - p) * 0.7 + pointer.current.y * 0.22 - scroll * 0.25;
-    const ty = (1 - p) * -2.6 + pointer.current.x * 0.32 + scroll * 1.6;
+    const ty = (1 - p) * -2.6 + pointer.current.x * 0.32 + scroll * 1.6 + d.off;
     sp.rotation.x += (tx - sp.rotation.x) * k;
     sp.rotation.y += (ty - sp.rotation.y) * k;
   });
@@ -139,15 +192,15 @@ function Stage({ slot, started }: Props) {
     <>
       <group ref={silk}>
         {/* Wide, deep ribbon behind the sphere, entering from the left like the opening ribbon. */}
-        <SilkRibbon reveal={intro} length={span} width={1.45} amp={0.32} freq={0.42} twist={1.25} seed={0.4} lift={0.8} position={[0, 0.05, -1.7]} rotation={[0, 0, -0.1]} />
+        <SilkRibbon reveal={intro} length={span} width={1.45} amp={0.32} freq={0.42} twist={1.25} seed={0.4} lift={0.8} position={[0, 0.05, -1.7]} rotation={[0, 0, -0.1]} segments={lite ? [160, 12] : undefined} />
         {/* Narrow, brighter ribbon crossing it at an angle. */}
-        <SilkRibbon reveal={intro} delay={0.12} length={span} width={0.5} amp={0.45} freq={0.6} twist={2.3} seed={2.2} speed={0.45} lift={1.15} position={[0, -0.25, -0.85]} rotation={[0, 0, 0.16]} />
+        {!lite && <SilkRibbon reveal={intro} delay={0.12} length={span} width={0.5} amp={0.45} freq={0.6} twist={2.3} seed={2.2} speed={0.45} lift={1.15} position={[0, -0.25, -0.85]} rotation={[0, 0, 0.16]} />}
       </group>
       <group ref={root}>
         <group ref={spin}>
           <RouteSphere intro={intro} />
         </group>
-        <Dust />
+        <Dust count={lite ? 80 : 220} />
       </group>
     </>
   );
@@ -188,22 +241,11 @@ function RouteSphere({ intro }: { intro: RefObject<{ p: number }> }) {
   );
 }
 
-// Small seeded PRNG so the dust field is identical on every render.
-function mulberry32(a: number) {
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function Dust() {
+function Dust({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
   const geom = useMemo(() => {
     const rand = mulberry32(6);
-    const n = 220;
+    const n = count;
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       const r = 1.6 + rand() * 3.6;
@@ -216,7 +258,7 @@ function Dust() {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     return g;
-  }, []);
+  }, [count]);
   useFrame((_, dt) => {
     if (ref.current) ref.current.rotation.y += dt * 0.02;
   });

@@ -4,7 +4,7 @@
   isolation: isolate;
   background: var(--sr-night);
   color: var(--sr-white);
-  padding: clamp(150px, 20vh, 210px) 0 clamp(170px, 20vw, 260px);
+  padding: clamp(150px, 20svh, 210px) 0 clamp(170px, 20vw, 260px);
 }
 .ct-hero__ember {
   position: absolute;
@@ -135,8 +135,10 @@
   border-bottom: 2px solid var(--sr-orange);
   padding-bottom: 2px;
 }
-.ct-mail:hover {
-  color: var(--sr-orange);
+@media (hover: hover) {
+  .ct-mail:hover {
+    color: var(--sr-orange);
+  }
 }
 .ct-social {
   display: flex;
@@ -157,12 +159,14 @@
   color: var(--sr-maroon);
   transition: background var(--dur-fast), color var(--dur-fast);
 }
-.ct-social a:hover {
-  background: var(--sr-night);
-  color: var(--sr-white);
+@media (hover: hover) {
+  .ct-social a:hover {
+    background: var(--sr-night);
+    color: var(--sr-white);
+  }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .ct-grid {
     grid-template-columns: 1fr;
   }
@@ -174,7 +178,7 @@
     padding-top: 8px;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .ct-hero__route path {
     opacity: 0.3;
   }
@@ -182,5 +186,47 @@
 @media (prefers-reduced-motion: reduce) {
   .ct-hero__route path {
     stroke-dashoffset: 0;
+  }
+}
+
+@media (hover: none) {
+  .ct-social a {
+    padding-block: 12px;
+  }
+}
+
+.ct-strip {
+  display: none;
+}
+/* Phone: the three steps as one strip over the form; the full list below it would repeat it. */
+@media (max-width: 600px) {
+  .ct-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ct-strip li {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding-top: 10px;
+    border-top: 2px solid var(--sr-orange);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.8rem;
+    line-height: 1.25;
+    color: var(--sr-white);
+  }
+  .ct-strip li > span {
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--sr-orange);
+  }
+  .ct-block--next {
+    display: none;
   }
 }

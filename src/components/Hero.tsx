@@ -1,5 +1,6 @@
-import { lazy, Suspense, useRef } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { CONTACT_HREF, HERO } from "../content";
+import { prefersLowPower } from "../lib/media";
 import { ArrowRight, ArrowUpRight } from "./Icon";
 import "./hero.css";
 
@@ -13,13 +14,17 @@ const Line = ({ children, i }: { children: React.ReactNode; i: number }) => (
 
 export function Hero({ ready }: { ready: boolean }) {
   const slot = useRef<HTMLDivElement>(null);
+  // Data saver, low-memory devices and browsers without WebGL get a still of the sphere.
+  const [still] = useState(prefersLowPower);
   return (
     <section id="top" className={`hero on-dark ${ready ? "is-ready" : ""}`} data-nav="dark">
       <div className="hero__ember hero__ember--a" />
       <div className="hero__ember hero__ember--b" />
-      <Suspense fallback={null}>
-        <HeroScene slot={slot} started={ready} />
-      </Suspense>
+      {!still && (
+        <Suspense fallback={null}>
+          <HeroScene slot={slot} started={ready} />
+        </Suspense>
+      )}
 
       <div className="hero__inner wrap">
         <p className="hero__eyebrow">
@@ -32,6 +37,7 @@ export function Hero({ ready }: { ready: boolean }) {
           </span>
           <span className="hero__slot" ref={slot} aria-hidden="true">
             <span className="hero__halo" />
+            {still && <img className="hero__poster" src="/hero-sphere.webp" alt="" width={640} height={640} decoding="async" />}
           </span>
           <span className="hero__bottom accent">
             <Line i={4}>{HERO.accent}</Line>

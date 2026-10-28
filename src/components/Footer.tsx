@@ -3,13 +3,32 @@ import { Lockup } from "../brand/Logo";
 import { FOOTER } from "../content";
 import { gsap, prefersReducedMotion } from "../lib/motion";
 import { to } from "../lib/links";
+import { PHONE, useMedia } from "../lib/media";
 import { ArrowUpRight } from "./Icon";
 import "./footer.css";
 
 const YEAR = new Date().getFullYear();
 
+type Link = { label: string; href: string };
+
+function Links({ links }: { links: Link[] }) {
+  return links.map((l) => {
+    const external = l.href.startsWith("http");
+    return (
+      <li key={l.label}>
+        <a href={to(l.href)} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>
+          {l.label}
+          {external && <ArrowUpRight size={11} />}
+        </a>
+      </li>
+    );
+  });
+}
+
 export function Footer() {
   const root = useRef<HTMLElement>(null);
+  // Phones fold the link columns into accordions and turn Social into a row of pills.
+  const phone = useMedia(PHONE);
   const word = useRef<HTMLSpanElement>(null);
 
   // Fit SIXTHROUTE edge to edge.
@@ -58,30 +77,37 @@ export function Footer() {
         </div>
 
         <nav className="footer__cols" aria-label="Footer">
-          {FOOTER.columns.map((col, i) => (
-            <div key={col.title} className="footer__col" data-reveal style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}>
-              <p className="footer__h">{col.title}</p>
-              <ul>
-                {col.links.map((l) => {
-                  const external = l.href.startsWith("http");
-                  return (
-                    <li key={l.label}>
-                      <a href={to(l.href)} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>
-                        {l.label}
-                        {external && <ArrowUpRight size={11} />}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+          {FOOTER.columns.map((col, i) =>
+            phone ? (
+              col.title === "Social" ? (
+                <ul key={col.title} className="footer__social" aria-label={col.title}>
+                  <Links links={col.links} />
+                </ul>
+              ) : (
+                <details key={col.title} className="footer__col footer__acc">
+                  <summary>{col.title}</summary>
+                  <ul>
+                    <Links links={col.links} />
+                  </ul>
+                </details>
+              )
+            ) : (
+              <div key={col.title} className="footer__col" data-reveal style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}>
+                <p className="footer__h">{col.title}</p>
+                <ul>
+                  <Links links={col.links} />
+                </ul>
+              </div>
+            ),
+          )}
         </nav>
 
         <div className="footer__legal">
           <span>© {YEAR} Sixth Route. All rights reserved.</span>
           <span className="footer__tag">Beyond the obvious.</span>
-          <a href="#top">Back to top ↑</a>
+          <a href="#top" className="tap">
+            Back to top ↑
+          </a>
         </div>
       </div>
 

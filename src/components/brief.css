@@ -69,7 +69,7 @@
   border-radius: 50%;
   background: var(--sr-cream);
   box-shadow: inset 0 0 0 1.5px var(--line-light);
-  font-size: 0.72rem;
+  font-size: max(0.72rem, var(--fs-floor));
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--sr-maroon);
@@ -127,9 +127,11 @@
 .field textarea::placeholder {
   color: rgba(var(--sr-night-rgb), 0.4);
 }
-.field input:hover,
-.field textarea:hover {
-  border-color: rgba(var(--sr-maroon-rgb), 0.35);
+@media (hover: hover) {
+  .field input:hover,
+  .field textarea:hover {
+    border-color: rgba(var(--sr-maroon-rgb), 0.35);
+  }
 }
 .field input:focus,
 .field textarea:focus {
@@ -160,7 +162,7 @@
   border-radius: 50%;
   background: var(--sr-maroon);
   color: var(--sr-cream);
-  font-size: 0.7rem;
+  font-size: max(0.7rem, var(--fs-floor));
   font-weight: 800;
 }
 
@@ -205,8 +207,10 @@
   color: var(--sr-maroon);
   transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
 }
-.chip:hover span {
-  border-color: var(--sr-maroon);
+@media (hover: hover) {
+  .chip:hover span {
+    border-color: var(--sr-maroon);
+  }
 }
 .chip input:checked + span {
   background: var(--sr-night);
@@ -282,7 +286,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .brief {
     --node: 28px;
   }
@@ -299,5 +303,11 @@
   }
   .brief__row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none) {
+  .chip span {
+    padding-block: 11px;
   }
 }

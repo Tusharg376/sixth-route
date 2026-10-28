@@ -1,0 +1,20 @@
+/* Phone-only "Start a Project" within thumb reach (see ThumbCta.tsx). Sits under the nav's
+   menu sheet and under dialogs, which live in the top layer. */
+.thumb {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  transform: translate(-50%, calc(100% + 28px));
+  opacity: 0;
+  transition: transform 0.6s var(--ease-out), opacity 0.4s var(--ease-out);
+}
+.thumb.is-shown {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+.thumb__btn {
+  box-shadow:
+    0 14px 34px rgba(var(--sr-night-rgb), 0.45),
+    0 0 0 1px rgba(var(--sr-night-rgb), 0.08);
+}

@@ -103,3 +103,10 @@
     stroke-dashoffset: -18;
   }
 }
+
+/* Touch: pupils glide to the last tap or an idle glance instead of tracking a cursor. */
+@media (hover: none) {
+  .mascot__eye circle:last-child {
+    transition: transform 0.45s var(--ease-out);
+  }
+}

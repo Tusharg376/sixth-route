@@ -1,14 +1,14 @@
 /* Manifesto as a pinned sequence of reroutes (Figma "Writing" copy). */
 .mf2 {
   position: relative;
-  height: calc(var(--beats) * 72vh + 100vh);
+  height: calc(var(--beats) * 72svh + 100svh);
   background: var(--sr-night);
   color: var(--sr-white);
 }
 .mf2__sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100svh;
   overflow: hidden;
   background:
     radial-gradient(60vmax 60vmax at 100% 0%, rgba(var(--sr-orange-rgb), 0.16), rgba(var(--sr-orange-rgb), 0) 70%),
@@ -21,7 +21,7 @@
 
 .mf-top {
   position: absolute;
-  inset: clamp(110px, 15vh, 150px) var(--gutter) auto;
+  inset: clamp(110px, 15svh, 150px) var(--gutter) auto;
   display: grid;
   gap: 18px;
 }
@@ -117,7 +117,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 28px;
-  margin-top: clamp(28px, 4vh, 48px);
+  margin-top: clamp(28px, 4svh, 48px);
   font-family: var(--font-display);
   font-weight: 500;
   font-size: clamp(1rem, 1.5vw, 1.3rem);
@@ -171,9 +171,9 @@
   line-height: 1.2;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
   .mf2 {
-    height: calc(var(--beats) * 64vh + 100vh);
+    height: calc(var(--beats) * 64svh + 100svh);
   }
   .mf-pairs {
     top: 44%;
@@ -190,5 +190,93 @@
   }
   .mf-finale {
     top: 24%;
+  }
+}
+
+/* Phone: the reroute list (ManifestoList). No pin; only the question sticks. */
+.mfl {
+  height: auto;
+  padding-block: 56px 96px;
+  overflow-x: clip;
+  background:
+    radial-gradient(60vmax 60vmax at 100% 0%, rgba(var(--sr-orange-rgb), 0.16), rgba(var(--sr-orange-rgb), 0) 70%),
+    radial-gradient(50vmax 50vmax at 0% 100%, rgba(var(--sr-orange-rgb), 0.12), rgba(var(--sr-orange-rgb), 0) 70%),
+    var(--sr-night);
+}
+.mfl__head {
+  position: sticky;
+  top: 82px;
+  z-index: 2;
+  isolation: isolate;
+  display: grid;
+  gap: 12px;
+  padding: 14px 0 36px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  background: linear-gradient(var(--sr-night) 80%, rgba(var(--sr-night-rgb), 0));
+}
+/* Rows that have passed the question would still show behind the see-through nav bar: a strip of
+   night above the question hides them. */
+.mfl__head::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -82px 0 auto;
+  height: 84px;
+  background: var(--sr-night);
+}
+.mfl__q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+.mfl__verb {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--muted-dark);
+}
+.mfl__rows {
+  display: grid;
+  gap: 30px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.mf-row {
+  position: relative;
+}
+.mfl .mf-from,
+.mfl .mf-to {
+  font-size: clamp(2rem, 10.4vw, 3rem);
+}
+.mfl .mf-to {
+  margin-left: 14vw;
+}
+.mfl .mf-line {
+  stroke-width: 3;
+}
+.mfl__finale {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 88px;
+}
+.mfl .mf-create {
+  font-size: clamp(2.3rem, 11vw, 3.2rem);
+}
+.mfl .mf-closers {
+  margin-top: 28px;
+  flex-direction: column;
+}
+@media (orientation: landscape) and (max-height: 500px) and (hover: none) {
+  .mfl__head {
+    position: static;
+    background: none;
+  }
+  .mfl__head::before {
+    display: none;
   }
 }

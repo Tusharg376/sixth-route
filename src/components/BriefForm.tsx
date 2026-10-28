@@ -1,8 +1,10 @@
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CAPABILITIES, CONTACT_PAGE, EMAIL } from "../content";
 import { Mark } from "../brand/Logo";
+import { PHONE, useMedia } from "../lib/media";
 import { ArrowRight } from "./Icon";
 import "./brief.css";
+import "./thumbcta.css";
 
 type Values = { name: string; email: string; company: string; services: string[]; timeline: string; message: string };
 type Status = "idle" | "sending" | "sent" | "mailto" | "error";
@@ -27,6 +29,29 @@ export function BriefForm() {
   const [v, setV] = useState<Values>(EMPTY);
   const [touched, setTouched] = useState<Partial<Record<Checked, boolean>>>({});
   const [status, setStatus] = useState<Status>("idle");
+
+  // Phones: keep a "Send brief" button within thumb reach while the form is on screen and its
+  // own send button isn't. It steps aside while typing, so it never sits over the keyboard.
+  const phone = useMedia(PHONE);
+  const form = useRef<HTMLFormElement>(null);
+  const send = useRef<HTMLButtonElement>(null);
+  const [reach, setReach] = useState(false);
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    const f = form.current;
+    const b = send.current;
+    if (!phone || !f || !b) return;
+    let inForm = false;
+    let atSend = false;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.target === f ? (inForm = e.isIntersecting) : (atSend = e.isIntersecting)));
+      setReach(inForm && !atSend);
+    });
+    io.observe(f);
+    io.observe(b);
+    return () => io.disconnect();
+  }, [phone, status]);
+  const bar = phone && reach && !typing;
 
   const err = (k: Checked) => (touched[k] ? check[k](v) : "");
   const set = <K extends keyof Values>(k: K, val: Values[K]) => setV((p) => ({ ...p, [k]: val }));
@@ -111,7 +136,16 @@ export function BriefForm() {
   }
 
   return (
-    <form id="brief" className="brief" onSubmit={submit} noValidate aria-describedby={`${id}-note`}>
+    <form
+      id="brief"
+      ref={form}
+      className="brief"
+      onSubmit={submit}
+      noValidate
+      aria-describedby={`${id}-note`}
+      onFocus={(e) => setTyping(e.target.matches("input:not([type=checkbox]):not([type=radio]), textarea"))}
+      onBlur={() => setTyping(false)}
+    >
       <fieldset className={group(0)}>
         <legend>
           <span>01</span> About you
@@ -122,6 +156,7 @@ export function BriefForm() {
               id={`${id}-name`}
               name="name"
               autoComplete="name"
+              enterKeyHint="next"
               value={v.name}
               onChange={(e) => set("name", e.target.value)}
               onBlur={() => setTouched((t) => ({ ...t, name: true }))}
@@ -137,6 +172,7 @@ export function BriefForm() {
               type="email"
               autoComplete="email"
               inputMode="email"
+              enterKeyHint="next"
               value={v.email}
               onChange={(e) => set("email", e.target.value)}
               onBlur={() => setTouched((t) => ({ ...t, email: true }))}
@@ -151,6 +187,7 @@ export function BriefForm() {
             id={`${id}-company`}
             name="company"
             autoComplete="organization"
+            enterKeyHint="next"
             value={v.company}
             onChange={(e) => set("company", e.target.value)}
           />
@@ -213,7 +250,7 @@ export function BriefForm() {
             <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.
           </p>
         )}
-        <button type="submit" className="btn btn--orange" disabled={status === "sending"}>
+        <button ref={send} type="submit" className="btn btn--orange" disabled={status === "sending"}>
           <span className="btn__label">{status === "sending" ? "Sending brief…" : "Send brief"}</span>
           <span className="btn__dot">
             <ArrowRight />
@@ -223,6 +260,17 @@ export function BriefForm() {
           We only use these details to reply to your enquiry.
         </p>
       </div>
+
+      {phone && (
+        <div className={`thumb ${bar ? "is-shown" : ""}`} inert={!bar}>
+          <button type="submit" className="btn btn--orange thumb__btn" disabled={status === "sending"}>
+            <span className="btn__label">Send brief</span>
+            <span className="btn__dot">
+              <ArrowRight />
+            </span>
+          </button>
+        </div>
+      )}
     </form>
   );
 }

@@ -4,6 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
+// Phones show and hide the address bar while scrolling; don't re-measure every pin for that.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 export { gsap, ScrollTrigger };
 

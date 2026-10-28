@@ -13,6 +13,7 @@ import { Proof } from "../components/Proof";
 import { Faq } from "../components/Faq";
 import { FinalCta } from "../components/FinalCta";
 import { Footer } from "../components/Footer";
+import { ThumbCta } from "../components/ThumbCta";
 import { getLenis, ScrollTrigger, useReveal, useSmoothScroll } from "../lib/motion";
 import "@designcodeio/threeui/style.css";
 
@@ -57,6 +58,7 @@ export default function Home() {
         <FinalCta />
       </main>
       <Footer />
+      {ready && <ThumbCta />}
     </>
   );
 }

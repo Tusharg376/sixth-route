@@ -32,8 +32,10 @@
   fill: var(--sr-maroon);
   transition: fill 0.5s var(--ease-out);
 }
-.dial__seg:hover path {
-  fill: #5a1a1c;
+@media (hover: hover) {
+  .dial__seg:hover path {
+    fill: #5a1a1c;
+  }
 }
 .dial__seg.is-active path {
   fill: var(--sr-orange);
@@ -163,31 +165,110 @@
   transition: color var(--dur-fast);
 }
 .caps__legend button span {
-  font-size: 0.72rem;
+  font-size: max(0.72rem, var(--fs-floor));
   font-weight: 600;
   color: var(--sr-orange);
 }
-.caps__legend button:hover,
 .caps__legend button.is-active {
   color: var(--sr-night);
+}
+@media (hover: hover) {
+  .caps__legend button:hover {
+    color: var(--sr-night);
+  }
 }
 .caps__legend button.is-active {
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
+
+/* Phones and tablets: one screen. Detail on top, a row of dots for the eight, and the dial as a
+   wheel half off the bottom edge (pointer at 12 o'clock) that a sideways swipe turns. */
+@media (max-width: 1024px) {
+  .caps {
+    padding-bottom: 0;
+    overflow: hidden;
+  }
   .caps__stage {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 8px;
   }
-  .dial {
-    width: min(100%, 420px);
+  .caps__panel {
+    gap: 4px;
   }
+  /* Room for the longest discipline, so the wheel never jumps as the text changes. */
   .caps__detail {
-    min-height: 0;
+    min-height: 248px;
+    gap: 12px;
+  }
+  .caps__detail h3 {
+    font-size: 2rem;
+  }
+  .caps__body {
+    font-size: 1rem;
+  }
+  .caps__chips li {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  /* The legend stays the tab list (keyboard and screen readers), drawn as dots. */
+  .caps__legend {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .caps__legend button {
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 44px;
+    padding: 0;
+    font-size: 0;
+  }
+  .caps__legend button span {
+    display: none;
+  }
+  .caps__legend button::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 4px;
+    background: rgba(var(--sr-maroon-rgb), 0.22);
+    transition: width var(--dur-base) var(--ease-out), background var(--dur-base);
+  }
+  .caps__legend button.is-active::before {
+    width: 22px;
+    background: var(--sr-orange);
+  }
+  /* Only the top of the wheel shows: the segment band, the pointer and the edge of the hub.
+     128vw on a phone; capped on tablets and short landscape screens. */
+  .dial {
+    --wheel: min(128vw, 760px, 120svh);
+    order: 2;
+    width: var(--wheel);
+    max-width: none;
+    height: calc(var(--wheel) * 0.344);
+    margin: 10px 0 0 calc(50% - var(--wheel) / 2);
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  .caps.is-spinning .dial__ring,
+  .caps.is-spinning .dial__icon {
+    transition: none;
   }
 }
-@media (max-width: 560px) {
-  .caps__legend {
-    grid-template-columns: 1fr;
+@media (min-width: 601px) and (max-width: 1024px) {
+  .caps__detail {
+    min-height: 220px;
+  }
+  .caps__detail h3 {
+    font-size: 2.6rem;
+  }
+  .caps__body {
+    font-size: var(--fs-lead);
   }
 }
