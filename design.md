@@ -157,27 +157,31 @@ put the glow on light backgrounds, or set the wordmark in any other typeface.
 
 Signature animations:
 
-1. **Opening (loader) — ribbons, no construction lines.** An orange ribbon flies in from the
-   bottom-left corner of the screen and threads the 6 tail-first (tail → bar → loop → spine → off the
-   top). A second, wider ribbon sweeps in from the bottom-right and coils inward 3½ turns to build
-   the circle behind it while the 6 darkens to maroon. The exact mark takes over, glows, the
-   wordmark rises letter by letter, and the lockup FLIPs to the top-left nav slot as the night
-   curtain lifts. Lead-ins are computed from the viewport so the ribbons always enter at the screen
-   corners. Geometry: `src/brand/ribbons.ts`.
+1. **Opening (loader) — ribbons, no construction lines.** Each ribbon is anchored to a screen edge
+   and unrolls from it. An orange ribbon unrolls from the **left edge** and threads the 6 tail-first
+   (tail → bar → loop → spine → off the top); once the 6 is drawn its tail lets go of the edge and
+   slides in. A wider ribbon unrolls from the **bottom edge**, runs one full lap exactly on the rim
+   (so its outline is the logo's own circle, r = 50) and then coils inward to fill the disc, while
+   the 6 darkens to maroon. A circular trim tucks the ribbon ends into the circle (as the logo
+   clips its stroke), the exact mark crossfades in and glows, the wordmark rises, and the lockup
+   FLIPs to the top-left nav slot as the night curtain dissolves. Edges are computed from the
+   viewport, so this works on any screen. Geometry: `src/brand/ribbons.ts`.
 2. **Hero 3D mark + silk ribbons (no orbit rings — the logo has none).** The mark is a real 3D
    sphere with the route as a raised maroon ribbon on its surface; it spins into alignment, tilts
    toward the cursor and turns with scroll. Behind it, two glossy silk ribbons (one wide and deep,
    one narrow and bright) flow across the full width inside the sphere's band, growing in from the
    left to continue the opening ribbon. They never sit behind the headline. `src/three/SilkRibbon.tsx`.
-3. **Manifesto as reroutes.** A pinned scene: the premise "What if we took a different route?"
-   stays up while six "Let's make X → Y" pairs take the stage. For each, an orange route strikes
-   through the obvious word, U-turns round its end and underlines the new word right-to-left as it
-   rises in orange. Finale: "something we create." is underlined out to the glowing mark, then
+3. **Manifesto as linked pairs.** A pinned scene: the premise "What if we took a different route?"
+   stays up while six "Let's make X → Y" pairs take the stage. For each, one orange route
+   underlines the first word, U-turns round its end and underlines the second right-to-left as it
+   rises in orange — joining the two. Both words matter: nothing is crossed out or dimmed. Finale: "something we create." is underlined out to the glowing mark, then
    the closers and "Welcome to Sixthroute."
 4. **What We Do as a dial.** The brand circle cut into eight segments around the mark. The dial
    turns so the active discipline meets an orange pointer (and pops out, orange); the panel shows
-   number, title, description and service chips; a legend lists all eight as tabs. Auto-advances
-   every ~4s while visible (a thin timer ring shows it), pauses on hover/focus, arrow keys work.
+   number, title, description and service chips; a legend lists all eight as tabs. It comes alive
+   as soon as the dial is on screen — one full greeting spin, then it auto-advances every ~3.6s
+   (a thin timer ring shows it). Pauses only while the pointer is over the dial or its legend;
+   arrow keys work.
 5. **Process:** four orange cards in a staircase. Each is `position: sticky` and locks into a row as
    you scroll (the marketinglab.framer.ai pattern).
 6. **Footer:** columns fade up in a left-to-right stagger, and the giant `SIXTHROUTE` wordmark
@@ -240,7 +244,7 @@ In-page anchors from other pages go to `/#section`; arriving with a hash skips t
 1. Loader → 2. Nav (logo, Home, Services, Work, About, FAQ, Contact, "Start a Project") →
 3. Hero ("The future doesn't follow a route. It creates one.") → 4. Brand intro + name story +
 manifesto → 5. Capabilities (eight disciplines) → 6. Featured projects ("Ideas in action.") →
-7. Why Sixthroute ("Less juggling. More connected thinking.") → 8. Process (4 sticky cards) →
+7. The Sixthroute difference ("Less juggling. More connected thinking.") → 8. Process (4 sticky cards) →
 9. The Work Speaks for Itself → 10. FAQ (8 questions) → 11. Final CTA
 ("Have a Vision? Let's Give It Direction.") → 12. Footer.
 

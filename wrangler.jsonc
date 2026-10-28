@@ -1,0 +1,14 @@
+// Cloudflare Workers (static assets) — used by Workers Builds on every push.
+// Production branch: `npx wrangler deploy`. Other branches: `npx wrangler preview`, which gives
+// each branch its own preview URL so versions can be compared side by side.
+{
+  "name": "sixth-route",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get our mascot page (404.html) with a real 404 status.
+    "not_found_handling": "404-page"
+  },
+  // Required by `wrangler preview` (non-production branch builds). Empty = inherit everything above.
+  "previews": {}
+}

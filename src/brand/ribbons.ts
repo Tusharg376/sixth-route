@@ -31,33 +31,36 @@ export function routeRibbon(start: P = [-280, 540]) {
   const next = pts[3];
   const len = Math.hypot(next[0] - tail[0], next[1] - tail[1]);
   const dir: P = [(next[0] - tail[0]) / len, (next[1] - tail[1]) / len];
-  const c1: P = [start[0] + (tail[0] - start[0]) * 0.45, start[1] + (tail[1] - start[1]) * 0.15];
+  const c1: P = [start[0] + (tail[0] - start[0]) * 0.5, start[1]];
   const c2: P = [tail[0] - dir[0] * 95, tail[1] - dir[1] * 95];
   const lead = `M${fmt(start)}C${fmt(c1)} ${fmt(c2)} ${fmt(tail)}`;
   const main = `M${fmt(tail)}${smooth(pts)}`;
   return { full: lead + smooth(pts), lead, main };
 }
 
-/** The circle, built as a ribbon coiling inward from the rim (3½ turns, slightly overlapping).
- *  `start` is where the ribbon enters (just off-screen, bottom-right). */
+/** The circle, built as a ribbon: one full lap exactly on the logo's rim (so its outline *is* the
+ *  logo's circle, r = 50), then a spiral inward that fills the disc (turns overlap slightly).
+ *  `start` is where the ribbon enters from the screen edge. */
 export function coilRibbon(start: P = [380, 580]) {
-  const width = 12.5;
-  const r0 = 50 - width / 2;
-  const turns = (r0 + width * 0.25) / width;
+  const pitch = 12.5;
+  const stroke = pitch * 1.14;
+  const r0 = 50 - stroke / 2; // outer edge of the stroke lands exactly on r = 50
   const pts: P[] = [];
+  const at = (a: number, r: number): P => [50 + r * Math.cos(a), 50 + r * Math.sin(a)];
+  const lapSteps = 120;
+  for (let i = 0; i <= lapSteps; i++) pts.push(at(Math.PI / 2 + (i / lapSteps) * Math.PI * 2, r0)); // start at the bottom, clockwise
+  const turns = r0 / pitch;
   const steps = Math.round(turns * 120);
-  for (let i = 0; i <= steps; i++) {
+  for (let i = 1; i <= steps; i++) {
     const t = i / steps;
-    const a = Math.PI / 2 + t * turns * Math.PI * 2; // start at the bottom, run clockwise
-    const r = Math.max(r0 - t * turns * width, 0);
-    pts.push([50 + r * Math.cos(a), 50 + r * Math.sin(a)]);
+    pts.push(at(Math.PI / 2 + Math.PI * 2 + t * turns * Math.PI * 2, Math.max(r0 - t * turns * pitch, 0)));
   }
   const rim = pts[0];
-  const c1: P = [start[0] - (start[0] - rim[0]) * 0.2, start[1] - (start[1] - rim[1]) * 0.6];
-  const c2: P = [rim[0] + 110, rim[1]];
+  const c1: P = [start[0], start[1] - (start[1] - rim[1]) * 0.75];
+  const c2: P = [rim[0] + 120, rim[1]];
   const lead = `M${fmt(start)}C${fmt(c1)} ${fmt(c2)} ${fmt(rim)}`;
   const main = `M${fmt(rim)}` + pts.slice(1).map((p) => `L${fmt(p)}`).join("");
-  return { full: lead + main.replace(/^M[^L]+/, ""), lead, main, width: width * 1.14 };
+  return { full: lead + main.replace(/^M[^L]+/, ""), lead, main, width: stroke };
 }
 
 export const ROUTE_RIBBON = routeRibbon();

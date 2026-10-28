@@ -11,7 +11,7 @@ const N = CAPABILITIES.length;
 const R_OUT = 56;
 const R_IN = 31;
 const GAP = 1.8; // degrees between segments
-const ADVANCE_MS = 4200;
+const ADVANCE_MS = 3600;
 
 const rad = (d: number) => (d * Math.PI) / 180;
 const pt = (r: number, d: number) => [r * Math.cos(rad(d)), r * Math.sin(rad(d))] as const;
@@ -40,6 +40,8 @@ export function Capabilities() {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const root = useRef<HTMLElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const greeted = useRef(false);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const select = useCallback(
@@ -54,8 +56,19 @@ export function Capabilities() {
   );
 
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.35 });
-    if (root.current) io.observe(root.current);
+    // Watch the dial itself (not the tall section), so it comes alive the moment it's on screen.
+    const io = new IntersectionObserver(
+      ([e]) => {
+        setInView(e.isIntersecting);
+        // First arrival: one full turn, so it reads as a wheel straight away.
+        if (e.isIntersecting && !greeted.current && !prefersReducedMotion()) {
+          greeted.current = true;
+          setRot((r) => r - 360);
+        }
+      },
+      { threshold: 0.45 },
+    );
+    if (stage.current) io.observe(stage.current);
     return () => io.disconnect();
   }, []);
 
@@ -86,10 +99,6 @@ export function Capabilities() {
       ref={root}
       className={`caps on-light ${auto ? "is-auto" : ""}`}
       data-nav="light"
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
     >
       <div className="wrap">
         <header className="section-head">
@@ -106,8 +115,8 @@ export function Capabilities() {
           </p>
         </header>
 
-        <div className="caps__stage">
-          <div className="dial" data-reveal>
+        <div className="caps__stage" ref={stage}>
+          <div className="dial" data-reveal onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
             <svg viewBox="-64 -64 128 128" aria-hidden="true">
               {/* Pointer + the route out to the panel. */}
               <path className="dial__route" d="M60 0H64" />
@@ -161,7 +170,16 @@ export function Capabilities() {
               </ul>
             </div>
 
-            <div className="caps__legend" role="tablist" aria-label="Disciplines" onKeyDown={onKey}>
+            <div
+              className="caps__legend"
+              role="tablist"
+              aria-label="Disciplines"
+              onKeyDown={onKey}
+              onPointerEnter={() => setPaused(true)}
+              onPointerLeave={() => setPaused(false)}
+              onFocus={() => setPaused(true)}
+              onBlur={() => setPaused(false)}
+            >
               {CAPABILITIES.map((cap, i) => (
                 <button
                   key={cap.title}

@@ -26,7 +26,9 @@ export default function HeroScene({ slot, started }: Props) {
   return (
     <div ref={wrap} className="hero__canvas" aria-hidden="true">
       <Canvas
-        frameloop={visible ? "always" : "never"}
+        // Render once (compiles shaders) but hold still until the intro hands over, so the
+        // opening animation never competes with the 3D scene for the GPU.
+        frameloop={visible && started ? "always" : "demand"}
         dpr={[1, 1.8]}
         camera={{ fov: 28, position: [0, 0, 12], near: 0.1, far: 60 }}
         gl={{ antialias: true, alpha: true, toneMapping: THREE.NoToneMapping, powerPreference: "high-performance" }}
