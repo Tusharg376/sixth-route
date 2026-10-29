@@ -1,331 +1,136 @@
 .hero {
   position: relative;
-  min-height: 100svh;
   min-height: max(100svh, 720px);
   background: var(--sr-night);
   color: var(--sr-white);
-  overflow: hidden;
-  isolation: isolate;
-}
-.hero__ember {
-  position: absolute;
-  z-index: -2;
-  width: 80vmax;
-  height: 80vmax;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(var(--sr-orange-rgb), 0.24), rgba(var(--sr-orange-rgb), 0));
-  pointer-events: none;
-}
-.hero__ember--a {
-  right: -40vmax;
-  top: -42vmax;
-}
-.hero__ember--b {
-  left: -42vmax;
-  bottom: -46vmax;
-}
-.hero__canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none; /* cursor tilt listens on window; text above stays selectable */
-}
-.hero__canvas canvas {
-  opacity: 0;
-  transition: opacity 1.2s var(--ease-out) 0.1s;
-}
-.hero.is-ready .hero__canvas canvas {
-  opacity: 1;
 }
 
 .hero__inner {
   position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: inherit;
-  height: max(100svh, 720px);
-  padding-top: clamp(104px, 14svh, 140px);
-  padding-bottom: clamp(24px, 4svh, 40px);
+  padding-top: 160px;
+  padding-bottom: 112px;
+  text-align: center;
 }
 
 .hero__eyebrow {
-  justify-self: center;
+  margin-bottom: 32px;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--fs-eyebrow);
-  letter-spacing: 0.32em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--muted-dark);
-  margin-bottom: clamp(14px, 2.4svh, 24px);
 }
 
 .hero__title {
-  display: grid;
-  grid-template-rows: auto minmax(200px, 1fr) auto;
-  justify-items: center;
-  align-items: center;
-  text-align: center;
-  font-size: clamp(2.5rem, 5.6vw, 6rem);
+  font-size: clamp(3rem, 7.2vw, 6.75rem);
   font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-  min-height: 0;
+  letter-spacing: -0.055em;
+  line-height: 1.06;
 }
-.hero__top {
-  display: grid;
-}
-.hero__slot {
-  position: relative;
+.hero__title > span {
   display: block;
-  width: min(46svh, 44vw);
-  height: 100%;
-  min-height: 200px;
-  max-height: 50svh;
-  align-self: stretch;
-  margin-block: clamp(8px, 1.5svh, 20px);
 }
-.hero__halo {
-  position: absolute;
-  inset: -45%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(var(--sr-orange-rgb), 0.32), rgba(var(--sr-orange-rgb), 0.08) 55%, rgba(var(--sr-orange-rgb), 0));
-  z-index: -1;
-  opacity: 0;
-  transform: scale(0.7);
-  transition: opacity 2s var(--ease-out) 0.3s, transform 2.4s var(--ease-out) 0.3s;
-}
-.hero.is-ready .hero__halo {
-  opacity: 1;
-  transform: none;
-}
-/* Still of the 3D sphere for low-power devices (prefersLowPower): same place, same size. */
-.hero__poster {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: auto;
-  height: auto;
-  max-width: 91%;
-  max-height: 91%;
-  aspect-ratio: 1;
-  object-fit: contain;
-  transform: translate(-50%, -50%) scale(0.72) rotate(-40deg);
-  opacity: 0;
-  transition: transform 2.4s var(--ease-out) 0.1s, opacity 1s var(--ease-out) 0.1s;
-}
-.hero.is-ready .hero__poster {
-  transform: translate(-50%, -50%);
-  opacity: 1;
-}
-.hero__bottom {
-  margin-top: 0.06em;
-}
-
-/* Line-by-line rise once the loader hands over. */
-.hero__line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-}
-.hero__line > span {
-  display: inline-block;
-  transform: translateY(105%);
-  transition: transform 1.2s var(--ease-out);
-  transition-delay: calc(0.15s + var(--i) * 0.09s);
-}
-.hero.is-ready .hero__line > span {
-  transform: none;
-}
-.hero__bottom .hero__line > span {
-  transition-delay: 0.9s;
+.hero__title .accent {
+  margin-top: 0.12em;
 }
 
 .hero__foot {
-  align-self: end;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: end;
-  gap: 24px;
-  margin-top: clamp(20px, 3svh, 36px);
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 1s var(--ease-out) 1.2s, transform 1s var(--ease-out) 1.2s;
-}
-.hero.is-ready .hero__foot {
-  opacity: 1;
-  transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin-top: 32px;
 }
 .hero__body {
-  max-width: 38ch;
+  max-width: 52ch;
   color: var(--muted-dark);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 .hero__ctas {
   display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 12px;
 }
 .hero__scroll {
-  justify-self: end;
+  position: absolute;
+  bottom: 32px;
   display: inline-flex;
   align-items: center;
   gap: 12px;
   font-family: var(--font-display);
   font-size: max(0.72rem, var(--fs-floor));
-  letter-spacing: 0.24em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted-dark);
 }
-.hero__scroll span {
-  position: relative;
+.hero__scroll > span {
   width: 1px;
-  height: 44px;
-  background: var(--line-dark);
-  overflow: hidden;
-}
-.hero__scroll span::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+  height: 24px;
   background: var(--sr-orange);
-  animation: scroll-cue 2.2s var(--ease-inout) infinite;
-}
-@keyframes scroll-cue {
-  0% {
-    transform: translateY(-100%);
-  }
-  60%,
-  100% {
-    transform: translateY(100%);
-  }
 }
 
-@media (max-width: 1024px) {
-  .hero__foot {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-  }
-  .hero__scroll {
-    display: none;
-  }
+/* Keep the hero still, including the shared button hover treatments. */
+.hero .btn,
+.hero .btn::before,
+.hero .btn svg {
+  transition: none;
 }
-/* Phone: a poster that fits exactly one screen — headline, sphere, accent line, one CTA. */
+
 @media (max-width: 600px) {
-  .hero,
-  .hero__inner {
-    min-height: 100svh;
-    height: 100svh;
+  .hero {
+    min-height: max(100svh, 620px);
   }
   .hero__inner {
-    padding-top: 96px;
-    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding-top: 128px;
+    padding-bottom: 96px;
   }
   .hero__eyebrow {
-    letter-spacing: 0.2em;
-    margin-bottom: 12px;
+    margin-bottom: 26px;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
   }
-  /* Headline, sphere and accent as one tight stack, centred in the space left. */
   .hero__title {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-size: clamp(2.3rem, 11vw, 3.4rem);
-  }
-  /* A square up to 76vw that gives way first when the screen is short. */
-  .hero__slot {
-    flex: 0 1 76vw;
-    width: auto;
-    height: auto;
-    min-height: 0;
-    max-height: none;
-    aspect-ratio: 1;
-    align-self: center;
-    margin-block: 10px;
+    font-size: clamp(2rem, 8.8vw, 3.3rem);
+    letter-spacing: -0.05em;
+    line-height: 1.1;
   }
   .hero__foot {
-    gap: 4px;
-    margin-top: 14px;
+    width: 100%;
+    gap: 26px;
+    margin-top: 26px;
   }
-  /* The intro paragraph says what About says next; on a phone the poster stays short. */
   .hero__body {
-    display: none;
+    max-width: 38ch;
+    font-size: 1rem;
   }
   .hero__ctas {
     flex-direction: column;
     width: 100%;
-    gap: 2px;
+    max-width: 360px;
+    gap: 8px;
   }
   .hero__ctas .btn {
     justify-content: space-between;
   }
-  /* "Explore Our Work" becomes a quiet cue under the main button. */
   .hero__ctas .btn--ghost {
     justify-content: center;
     height: 44px;
     border: 0;
     font-size: 0.78rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted-dark);
   }
-}
-/* Touch: the sphere spins under a sideways drag; vertical drags still scroll the page. */
-@media (hover: none) {
-  .hero__slot {
-    touch-action: pan-y;
-  }
-}
-
-/* Phone on its side: one screen, headline on the left, sphere on the right. */
-@media (orientation: landscape) and (max-height: 500px) and (hover: none) {
-  .hero,
-  .hero__inner {
-    min-height: 100svh;
-    height: 100svh;
-  }
-  .hero__inner {
-    padding-top: 86px;
-    padding-bottom: 14px;
-  }
-  .hero__eyebrow {
-    justify-self: start;
-    margin-bottom: 8px;
-    letter-spacing: 0.2em;
-  }
-  .hero__title {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: 1fr auto;
-    justify-items: start;
-    column-gap: 24px;
-    text-align: left;
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-  }
-  .hero__top {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: end;
-  }
-  .hero__bottom {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  .hero__slot {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    width: auto;
-    height: 100%;
-    min-height: 0;
-    max-height: none;
-    aspect-ratio: 1;
-    margin: 0;
-  }
-  .hero__foot {
-    justify-items: start;
-    margin-top: 12px;
-  }
-  .hero__body {
-    display: none;
+  .hero__scroll {
+    bottom: 24px;
   }
 }

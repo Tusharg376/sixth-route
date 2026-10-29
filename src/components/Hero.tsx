@@ -1,47 +1,16 @@
-import { lazy, Suspense, useRef, useState } from "react";
 import { CONTACT_HREF, HERO } from "../content";
-import { prefersLowPower } from "../lib/media";
 import { ArrowRight, ArrowUpRight } from "./Icon";
 import "./hero.css";
 
-const HeroScene = lazy(() => import("../three/HeroScene"));
-
-const Line = ({ children, i }: { children: React.ReactNode; i: number }) => (
-  <span className="hero__line" style={{ ["--i" as string]: i }}>
-    <span>{children}</span>
-  </span>
-);
-
-export function Hero({ ready }: { ready: boolean }) {
-  const slot = useRef<HTMLDivElement>(null);
-  // Data saver, low-memory devices and browsers without WebGL get a still of the sphere.
-  const [still] = useState(prefersLowPower);
+export function Hero(_props: { ready: boolean }) {
   return (
-    <section id="top" className={`hero on-dark ${ready ? "is-ready" : ""}`} data-nav="dark">
-      <div className="hero__ember hero__ember--a" />
-      <div className="hero__ember hero__ember--b" />
-      {!still && (
-        <Suspense fallback={null}>
-          <HeroScene slot={slot} started={ready} />
-        </Suspense>
-      )}
-
+    <section id="top" className="hero on-dark" data-nav="dark">
       <div className="hero__inner wrap">
-        <p className="hero__eyebrow">
-          <Line i={0}>{HERO.eyebrow}</Line>
-        </p>
+        <p className="hero__eyebrow">{HERO.eyebrow}</p>
         <h1 className="hero__title">
-          <span className="hero__top">
-            <Line i={1}>{HERO.headline[0]}</Line>
-            <Line i={2}>{HERO.headline[1]}</Line>
-          </span>
-          <span className="hero__slot" ref={slot} aria-hidden="true">
-            <span className="hero__halo" />
-            {still && <img className="hero__poster" src="/hero-sphere.webp" alt="" width={640} height={640} decoding="async" />}
-          </span>
-          <span className="hero__bottom accent">
-            <Line i={4}>{HERO.accent}</Line>
-          </span>
+          <span>{HERO.headline[0]}</span>{" "}
+          <span>{HERO.headline[1]}</span>{" "}
+          <span className="accent">{HERO.accent}</span>
         </h1>
 
         <div className="hero__foot">
