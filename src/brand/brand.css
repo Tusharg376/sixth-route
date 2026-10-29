@@ -35,4 +35,8 @@
 }
 .lockup__mark {
   flex: none;
+  /* Whole-pixel sizing keeps the circle crisp and matches the opening lockup. */
+  width: 2em;
+  height: 2em;
+  overflow: visible;
 }
