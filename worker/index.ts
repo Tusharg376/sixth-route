@@ -55,8 +55,12 @@ export async function handleRequest(request: Request, env: Env, sendEmail: typeo
   if (!UUID.test(requestId)) return json({ error: "Please refresh the page and send your brief again." }, 400);
   if (!env.BRIEF_RATE_LIMITER) return json({ error: DELIVERY_ERROR }, 503);
   const ip = request.headers.get("CF-Connecting-IP") ?? "local";
-  const { success } = await env.BRIEF_RATE_LIMITER.limit({ key: `${url.hostname}:brief:${ip}` });
-  if (!success) return json({ error: "Let’s give that a moment. Please try sending your brief again in a minute." }, 429, { "Retry-After": "60" });
+  try {
+    const { success } = await env.BRIEF_RATE_LIMITER.limit({ key: `${url.hostname}:brief:${ip}` });
+    if (!success) return json({ error: "Let’s give that a moment. Please try sending your brief again in a minute." }, 429, { "Retry-After": "60" });
+  } catch {
+    return json({ error: DELIVERY_ERROR }, 503);
+  }
 
   let input: unknown;
   try { input = await readBody(request); }

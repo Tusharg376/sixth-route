@@ -79,6 +79,7 @@ test("oversized bodies are rejected even without a content-length header", async
 
 test("missing server configuration cannot produce a false success", async () => {
   assert.equal((await handleRequest(request(), env({ RESEND_API_KEY: undefined }), neverSend)).status, 503);
+  assert.equal((await handleRequest(request(), env({ BRIEF_RATE_LIMITER: { limit: async () => { throw new Error("Unavailable"); } } }), neverSend)).status, 503);
 });
 
 test("provider errors, missing acknowledgement, and connection failures never show success", async () => {

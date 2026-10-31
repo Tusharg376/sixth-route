@@ -34,8 +34,8 @@ Configure these server secrets in the target Cloudflare Worker environment (prev
 | `RESEND_FROM_EMAIL` | Sender at a domain verified in Resend, such as `Sixth Route <briefs@sixthroute.com>`. |
 | `BRIEF_TO_EMAIL` | Receiving inbox for project briefs. |
 
-For Git-connected preview builds, store these three values as encrypted build secrets on that
-preview and use `npm run deploy:preview` as its preview command. The script passes a private
+For Git-connected preview builds, add these three build settings on that preview, with
+`RESEND_API_KEY` encrypted as a Secret, and use `npm run deploy:preview` as its preview command. The script passes a private
 temporary secrets file to Wrangler and removes it afterward. It refuses to deploy if a value is
 missing. Production promotion needs the same runtime secrets in the production environment.
 
