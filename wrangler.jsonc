@@ -19,6 +19,14 @@
       "simple": { "limit": 5, "period": 60 }
     }
   ],
-  // Required by `wrangler preview` (non-production branch builds). Empty = inherit everything above.
-  "previews": {}
+  // Bindings must be declared explicitly for isolated previews.
+  "previews": {
+    "ratelimits": [
+      {
+        "name": "BRIEF_RATE_LIMITER",
+        "namespace_id": "2026103102",
+        "simple": { "limit": 5, "period": 60 }
+      }
+    ]
+  }
 }
