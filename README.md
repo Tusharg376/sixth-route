@@ -34,6 +34,11 @@ Configure these server secrets in the target Cloudflare Worker environment (prev
 | `RESEND_FROM_EMAIL` | Sender at a domain verified in Resend, such as `Sixth Route <briefs@sixthroute.com>`. |
 | `BRIEF_TO_EMAIL` | Receiving inbox for project briefs. |
 
+For Git-connected preview builds, store these three values as encrypted build secrets on that
+preview and use `npm run deploy:preview` as its preview command. The script passes a private
+temporary secrets file to Wrangler and removes it afterward. It refuses to deploy if a value is
+missing. Production promotion needs the same runtime secrets in the production environment.
+
 The sending domain must have Resend's verification records. This does not require changing the
 domain's incoming mail routing. An accepted email is not proof of inbox delivery; check Resend's
 delivery status and the receiving inbox when verifying a release.

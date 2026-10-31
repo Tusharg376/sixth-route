@@ -8,6 +8,7 @@
     "build": "tsc -b && tsc -p tsconfig.worker.json && vite build",
     "test": "node --experimental-strip-types --test worker/*.test.ts",
     "dev:worker": "npx wrangler dev --port 8787",
+    "deploy:preview": "node scripts/deploy-preview.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
