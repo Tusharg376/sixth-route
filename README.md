@@ -37,7 +37,9 @@ Configure these server secrets in the target Cloudflare Worker environment (prev
 For Git-connected preview builds, add these three build settings on that preview, with
 `RESEND_API_KEY` encrypted as a Secret, and use `npm run deploy:preview` as its preview command. The script passes a private
 temporary secrets file to Wrangler and removes it afterward. It refuses to deploy if a value is
-missing. Production promotion needs the same runtime secrets in the production environment.
+missing. For production, configure the same three build settings in the Production environment
+and use `npm run deploy:production` as its deploy command. This uploads the server code and
+secrets together, so the form never runs with missing delivery settings during promotion.
 
 The sending domain must have Resend's verification records. This does not require changing the
 domain's incoming mail routing. An accepted email is not proof of inbox delivery; check Resend's
