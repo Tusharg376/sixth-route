@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 // Multi-page build: each HTML file is a page; static hosts serve 404.html for unknown routes.
 export default defineConfig({
   plugins: [react()],
+  server: { proxy: { "/api": "http://127.0.0.1:8787" } },
   build: {
     rolldownOptions: {
       input: {

@@ -2,33 +2,26 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CAPABILITIES, CONTACT_PAGE, EMAIL } from "../content";
 import { Mark } from "../brand/Logo";
 import { PHONE, useMedia } from "../lib/media";
+import { BRIEF_LIMITS, EMPTY_BRIEF, checkBrief as check, type BriefValues as Values, type BriefField as Checked } from "../lib/brief";
 import { ArrowRight } from "./Icon";
 import "./brief.css";
 import "./thumbcta.css";
 
-type Values = { name: string; email: string; company: string; services: string[]; timeline: string; message: string };
-type Status = "idle" | "sending" | "sent" | "mailto" | "error";
-
-const EMPTY: Values = { name: "", email: "", company: "", services: [], timeline: "", message: "" };
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-const check = {
-  name: (v: Values) => (v.name.trim().length >= 2 ? "" : "Enter your name."),
-  email: (v: Values) => (EMAIL_RE.test(v.email.trim()) ? "" : "Enter an email address like name@company.com."),
-  message: (v: Values) =>
-    v.message.trim().length >= 10 ? "" : "Tell us a little about the project — a sentence or two is enough.",
-};
-type Checked = keyof typeof check;
-
-// Optional: set VITE_FORM_ENDPOINT to a form backend (Formspree, Basin, your API) that accepts JSON.
-// Without it, the brief opens in the visitor's email app, addressed to the studio.
-const ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT;
+type Status = "idle" | "sending" | "sent" | "error";
 
 export function BriefForm() {
   const id = useId();
-  const [v, setV] = useState<Values>(EMPTY);
+  const [v, setV] = useState<Values>(EMPTY_BRIEF);
   const [touched, setTouched] = useState<Partial<Record<Checked, boolean>>>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [deliveryError, setDeliveryError] = useState("");
+  const [serverErrors, setServerErrors] = useState<Partial<Record<Checked, string>>>({});
+  const requestId = useRef<string | null>(null);
+  const submitting = useRef(false);
+  const confirmation = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status === "sent") confirmation.current?.focus();
+  }, [status]);
 
   // Phones: keep a "Send brief" button within thumb reach while the form is on screen and its
   // own send button isn't. It steps aside while typing, so it never sits over the keyboard.
@@ -53,8 +46,14 @@ export function BriefForm() {
   }, [phone, status]);
   const bar = phone && reach && !typing;
 
-  const err = (k: Checked) => (touched[k] ? check[k](v) : "");
-  const set = <K extends keyof Values>(k: K, val: Values[K]) => setV((p) => ({ ...p, [k]: val }));
+  const err = (k: Checked) => serverErrors[k] || (touched[k] ? check[k](v) : "");
+  const set = <K extends keyof Values>(k: K, val: Values[K]) => {
+    requestId.current = null;
+    setServerErrors({});
+    setDeliveryError("");
+    if (status === "error") setStatus("idle");
+    setV((p) => ({ ...p, [k]: val }));
+  };
   const toggle = (s: string) =>
     set("services", v.services.includes(s) ? v.services.filter((x) => x !== s) : [...v.services, s]);
 
@@ -64,10 +63,13 @@ export function BriefForm() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (submitting.current) return;
     setTouched({ name: true, email: true, message: true });
     const firstBad = (Object.keys(check) as Checked[]).find((k) => check[k](v));
     if (firstBad) {
-      document.getElementById(`${id}-${firstBad}`)?.focus();
+      const field = document.getElementById(`${id}-${firstBad}`);
+      field?.focus({ preventScroll: true });
+      field?.scrollIntoView({ block: "center" });
       return;
     }
     const brief = {
@@ -78,45 +80,49 @@ export function BriefForm() {
       timeline: v.timeline,
       message: v.message.trim(),
     };
-    if (!ENDPOINT) {
-      const lines = [`Name: ${brief.name}`, `Email: ${brief.email}`];
-      if (brief.company) lines.push(`Business / website: ${brief.company}`);
-      if (brief.services.length) lines.push(`Interested in: ${brief.services.join(", ")}`);
-      if (brief.timeline) lines.push(`Timeline: ${brief.timeline}`);
-      const body = [...lines, "", brief.message].join("\n");
-      window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(`Project brief — ${brief.name}`)}&body=${encodeURIComponent(body)}`;
-      setStatus("mailto");
-      return;
-    }
+    submitting.current = true;
     setStatus("sending");
+    setDeliveryError("");
+    requestId.current ??= crypto.randomUUID();
     try {
-      const res = await fetch(ENDPOINT, {
+      const res = await fetch("/api/brief", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json", "Idempotency-Key": requestId.current },
         body: JSON.stringify(brief),
+        signal: AbortSignal.timeout(15000),
       });
-      setStatus(res.ok ? "sent" : "error");
+      const result = await res.json() as { ok?: boolean; id?: string; error?: string; errors?: Partial<Record<Checked, string>> };
+      if (res.ok && result.ok === true && typeof result.id === "string" && result.id) {
+        setStatus("sent");
+      } else if (res.status === 422 && result.errors) {
+        setServerErrors(result.errors);
+        setStatus("idle");
+        const firstField = (Object.keys(check) as Checked[]).find((key) => result.errors?.[key]);
+        if (firstField) {
+          const field = document.getElementById(`${id}-${firstField}`);
+          field?.focus({ preventScroll: true });
+          field?.scrollIntoView({ block: "center" });
+        }
+      } else {
+        setDeliveryError(result.error || "Your brief couldn’t find its way to us just yet. Please try again in a moment.");
+        setStatus("error");
+      }
     } catch {
+      setDeliveryError("The connection took a detour. Your brief is still here — please try sending it again.");
       setStatus("error");
+    } finally {
+      submitting.current = false;
     }
   };
 
-  if (status === "sent" || status === "mailto") {
+  if (status === "sent") {
     return (
-      <div className="brief brief--done" role="status">
+      <div className="brief brief--done" role="status" ref={confirmation} tabIndex={-1}>
         <Mark size={72} glow />
-        <h2>{status === "sent" ? "Brief sent." : "Your brief is ready to send."}</h2>
+        <h2>Your next route starts here.</h2>
         <p>
-          {status === "sent" ? (
-            <>
-              Thanks, {v.name.trim().split(" ")[0]}. We'll reply to <strong>{v.email.trim()}</strong> with next steps.
-            </>
-          ) : (
-            <>
-              Your email app should have opened with the brief filled in — send it from there and we'll take it from
-              that point. Nothing opened? Email us at <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.
-            </>
-          )}
+          Thanks, {v.name.trim().split(" ")[0]}. Your brief is on its way to our team.
+          We’ll reply to <strong>{v.email.trim()}</strong> with next steps.
         </p>
         <div className="brief__done-actions">
           <a href="/" className="btn btn--orange">
@@ -125,11 +131,6 @@ export function BriefForm() {
               <ArrowRight />
             </span>
           </a>
-          {status === "mailto" && (
-            <button type="button" className="btn btn--ghost btn--on-light" onClick={() => setStatus("idle")}>
-              Edit the brief
-            </button>
-          )}
         </div>
       </div>
     );
@@ -142,6 +143,7 @@ export function BriefForm() {
       className="brief"
       onSubmit={submit}
       noValidate
+      aria-busy={status === "sending"}
       aria-describedby={`${id}-note`}
       onFocus={(e) => setTyping(e.target.matches("input:not([type=checkbox]):not([type=radio]), textarea"))}
       onBlur={() => setTyping(false)}
@@ -163,6 +165,8 @@ export function BriefForm() {
               aria-invalid={!!err("name")}
               aria-describedby={err("name") ? `${id}-name-err` : undefined}
               required
+              maxLength={BRIEF_LIMITS.name}
+              disabled={status === "sending"}
             />
           </Field>
           <Field id={`${id}-email`} label="Work email" error={err("email")}>
@@ -179,6 +183,8 @@ export function BriefForm() {
               aria-invalid={!!err("email")}
               aria-describedby={err("email") ? `${id}-email-err` : undefined}
               required
+              maxLength={BRIEF_LIMITS.email}
+              disabled={status === "sending"}
             />
           </Field>
         </div>
@@ -189,6 +195,8 @@ export function BriefForm() {
             autoComplete="organization"
             enterKeyHint="next"
             value={v.company}
+            maxLength={BRIEF_LIMITS.company}
+            disabled={status === "sending"}
             onChange={(e) => set("company", e.target.value)}
           />
         </Field>
@@ -205,7 +213,7 @@ export function BriefForm() {
           <div>
             {CAPABILITIES.map((c) => (
               <label key={c.title} className="chip">
-                <input type="checkbox" checked={v.services.includes(c.title)} onChange={() => toggle(c.title)} />
+                <input type="checkbox" checked={v.services.includes(c.title)} onChange={() => toggle(c.title)} disabled={status === "sending"} />
                 <span>{c.title}</span>
               </label>
             ))}
@@ -218,7 +226,7 @@ export function BriefForm() {
           <div>
             {CONTACT_PAGE.timelines.map((t) => (
               <label key={t} className="chip">
-                <input type="radio" name="timeline" checked={v.timeline === t} onChange={() => set("timeline", t)} />
+                <input type="radio" name="timeline" checked={v.timeline === t} onChange={() => set("timeline", t)} disabled={status === "sending"} />
                 <span>{t}</span>
               </label>
             ))}
@@ -236,6 +244,8 @@ export function BriefForm() {
             aria-invalid={!!err("message")}
             aria-describedby={err("message") ? `${id}-message-err` : undefined}
             required
+            maxLength={BRIEF_LIMITS.message}
+            disabled={status === "sending"}
           />
         </Field>
       </fieldset>
@@ -246,7 +256,7 @@ export function BriefForm() {
         </p>
         {status === "error" && (
           <p className="brief__error" role="alert">
-            Your brief didn't send. Check your connection and try again, or email us at{" "}
+            {deliveryError} You can also reach us at{" "}
             <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.
           </p>
         )}
@@ -264,7 +274,7 @@ export function BriefForm() {
       {phone && (
         <div className={`thumb ${bar ? "is-shown" : ""}`} inert={!bar}>
           <button type="submit" className="btn btn--orange thumb__btn" disabled={status === "sending"}>
-            <span className="btn__label">Send brief</span>
+            <span className="btn__label">{status === "sending" ? "Sending brief…" : "Send brief"}</span>
             <span className="btn__dot">
               <ArrowRight />
             </span>
@@ -283,7 +293,7 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
       </label>
       {children}
       {error && (
-        <p id={`${id}-err`} className="field__error">
+        <p id={`${id}-err`} className="field__error" aria-live="polite">
           {error}
         </p>
       )}

@@ -16,8 +16,32 @@ for unknown routes).
 
 | Variable | Effect |
 | --- | --- |
-| `VITE_FORM_ENDPOINT` | URL that accepts the contact brief as JSON (Formspree, Basin, your API). Without it the form opens the visitor's email app pre-filled. |
 | `VITE_AGENTATION_ENDPOINT` | Set to `http://localhost:4747` in `.env.development`; syncs Agentation notes to the `agentation-mcp` server. |
+
+### Brief delivery
+
+The contact form posts to the same-origin `/api/brief` Cloudflare Worker route. The Worker
+validates the brief, limits requests to five per minute per visitor/location, and sends a plain-text
+email through Resend. The recipient and sender come only from server settings; the visitor's
+address is used as Reply-To. The site confirms submission only after Resend accepts the email.
+Failed attempts preserve the form and reuse an idempotency key on retry to avoid duplicate emails.
+
+Configure these server secrets in the target Cloudflare Worker environment (previews are isolated):
+
+| Secret | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Resend sending key. Never use a `VITE_` variable or put it in source. |
+| `RESEND_FROM_EMAIL` | Sender at a domain verified in Resend, such as `Sixth Route <briefs@sixthroute.com>`. |
+| `BRIEF_TO_EMAIL` | Receiving inbox for project briefs. |
+
+The sending domain must have Resend's verification records. This does not require changing the
+domain's incoming mail routing. An accepted email is not proof of inbox delivery; check Resend's
+delivery status and the receiving inbox when verifying a release.
+
+For local development, copy `.dev.vars.example` to ignored `.dev.vars` and fill in the settings.
+Run `npm run build`, then `npm run dev:worker` and `npm run dev` in separate terminals. Vite
+forwards `/api` to the local Worker. `npm test` exercises validation, routing, quota protection,
+provider acknowledgement, failure handling, and the server-controlled recipient without sending email.
 
 ### Agentation (dev only)
 
@@ -58,6 +82,6 @@ Process (sticky staircase) · The Work Speaks for Itself · FAQ · Final CTA (Th
   The first card (the Sixth Route identity) is the studio's own work; the rest are labelled
   "Self-initiated concept" as the brief requires.
 - Confirm the "Why Sixth Route" name story copy with the client.
-- Set the real email (`EMAIL`), social profile URLs, and a form backend (`VITE_FORM_ENDPOINT`).
+- Confirm the public contact email (`EMAIL`), social profile URLs, and Resend delivery settings.
 - Build the Privacy Policy and Terms of Service pages (footer links point at `/privacy`, `/terms`).
 - Fonts load from Google Fonts; self-host them if offline/privacy requirements apply.

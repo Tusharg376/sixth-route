@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local Worker development; never commit real credentials.
+RESEND_API_KEY=replace-with-your-resend-key
+RESEND_FROM_EMAIL="Sixth Route <briefs@sixthroute.com>"
+BRIEF_TO_EMAIL=sixthroute1@gmail.com
