@@ -78,10 +78,10 @@
   background: var(--sr-orange);
 }
 
-/* Keep the hero still, including the shared button hover treatments. */
-.hero .btn,
-.hero .btn::before,
-.hero .btn svg {
+/* Keep the secondary link still; the primary CTA uses the shared button transitions. */
+.hero .btn--ghost,
+.hero .btn--ghost::before,
+.hero .btn--ghost svg {
   transition: none;
 }
 
