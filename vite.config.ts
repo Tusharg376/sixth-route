@@ -1,10 +1,12 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { resolve } from "node:path";
+import { siteSeo } from "./scripts/site-seo.ts";
+
+const seo = siteSeo(import.meta.dirname);
 
 // Multi-page build: each HTML file is a page; static hosts serve 404.html for unknown routes.
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), seo.plugin],
   server: {
     proxy: {
       "/api": {
@@ -23,11 +25,7 @@ export default defineConfig({
   },
   build: {
     rolldownOptions: {
-      input: {
-        home: resolve(import.meta.dirname, "index.html"),
-        contact: resolve(import.meta.dirname, "contact/index.html"),
-        notFound: resolve(import.meta.dirname, "404.html"),
-      },
+      input: seo.input,
     },
   },
 });

@@ -12,6 +12,20 @@ npm run build    # production build in dist/
 Pages: `/` (landing), `/contact/` (brief form), `/404.html` (mascot page; static hosts serve it
 for unknown routes).
 
+### Search indexing
+
+Every build discovers the site's HTML pages and generates `dist/sitemap.xml` and `dist/robots.txt`.
+Canonical URLs use `https://www.sixthroute.com`; the sitemap and page head tags agree on this host.
+Home and Contact are currently the only indexable pages. Hash sections, query variations, the 404
+page, meta redirects, `noindex` pages, and pages canonicalized elsewhere are excluded. Redirects
+in `public/_redirects` and `X-Robots-Tag: noindex` rules in `public/_headers` are also respected.
+
+To add a page, create its HTML entry (normally `page-name/index.html`) outside the source, public,
+scripts, worker, dependency, and output folders. The next build includes it in the page bundle,
+canonical tags, and sitemap automatically. Use a robots `noindex` meta tag to keep a page out.
+The sitemap intentionally omits `lastmod` rather than publishing inaccurate modification dates.
+Cloudflare may prepend its managed content signals to the generated robots.txt at the edge.
+
 ### Environment (optional)
 
 | Variable | Effect |
