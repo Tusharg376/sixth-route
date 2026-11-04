@@ -135,6 +135,15 @@ put the glow on light backgrounds, or set the wordmark in any other typeface.
   fill the pill **behind** the label and arrow (the circle is the button's `::before`), so text never
   disappears. Orange variant: night circle, label turns cream on hover.
 - **Secondary button:** pill, 1px hairline border, text + `↗`.
+- **Cursor (route trail):** on a mouse that can hover, the system cursor is replaced by a 12px
+  orange head that draws a short orange route line behind it. The tail is deliberately short (about
+  180ms, tapering from 4.5px to a hairline; `TRAIL_MS` in `src/lib/routeCursor.ts`): a comet, not a
+  ribbon, and capped at about 90px so a fast flick never draws a long streak. Over anything clickable (links, buttons, tabs, the dial, the opening) the head swells into
+  a 28px ring with a faint orange fill; on press it tightens. A hairline night outline keeps it
+  readable on orange surfaces. Over text entry (inputs, textareas, selects) the head and trail step
+  aside and the system cursor returns, so the caret is never hidden. Not mounted on touch screens
+  (`hover: none`) or with `prefers-reduced-motion`. Colour comes from `--sr-orange-rgb`; no new
+  colours. Styles in `src/styles/cursor.css`.
 - **Radius:** swatches and cards 14px. Large media cards 22px. Pills fully rounded.
 - **Cards on cream:** white fill, hairline border, no heavy shadows.
 - **Section header:** eyebrow + dash, then heading (left) and an intro paragraph aligned to the
@@ -174,7 +183,9 @@ Signature animations (desktop; on phones and tablets several take a different fo
    one narrow and bright) flow across the full width inside the sphere's band, growing in from the
    left to continue the opening ribbon. They never sit behind the headline. `src/three/SilkRibbon.tsx`.
 3. **Manifesto as linked pairs.** A pinned scene: the premise "What if we took a different route?"
-   stays up while six "Let's make X → Y" pairs take the stage. For each, one orange route
+   comes up as the section slides in (once about a quarter of it is on screen), the first pair is
+   already drawing by the time it pins, so it never opens on a blank screen, and the premise stays
+   up while six "Let's make X → Y" pairs take the stage. For each, one orange route
    underlines the first word, U-turns round its end and underlines the second right-to-left as it
    rises in orange — joining the two. Both words matter: nothing is crossed out or dimmed. Finale: "something we create." is underlined out to the glowing mark, then
    the closers and "Welcome to Sixthroute."
@@ -193,6 +204,22 @@ Signature animations (desktop; on phones and tablets several take a different fo
 
 Always honour `prefers-reduced-motion`: skip the loader, show final states, and disable
 scroll-scrubbing.
+
+**Content first, animation second.** Scroll animations never gate content, and they play once.
+
+- Until someone scrolls, every section is in its finished state: all text visible, the name-story
+  map drawn, the process route lit, the footer wordmark risen, and the manifesto shown as plain
+  lines (the pinned scene is tall and empty until it plays). A crawler, a full-page screenshot, a
+  printout or a reader that never scrolls sees everything.
+- The first scroll "arms" the page (`html.is-armed`, `src/lib/motion.ts`). From then on content
+  below the fold waits to be scrolled into view, animates in once and stays. A link with a `#hash`
+  arms it from the start, so the jump lands on the final layout.
+- Nothing is undone on the way back up. `[data-reveal]` elements never fade out again, and every
+  scrubbed scene uses `scrubOnce`, which follows the scroll forward only (scrolling up leaves it
+  where it got to; landing past it jumps to its finished state). That includes the pinned manifesto
+  and the process route.
+- Not covered, because they are controls rather than entrances: the hero sphere's scroll turn, the
+  projects row and its preview, the dial, and the nav and thumb-CTA states.
 
 ## 8. Voice & copy
 
@@ -390,6 +417,7 @@ manifesto → 5. Capabilities (eight disciplines) → 6. Featured projects ("Ide
 - Content: `src/content.ts` (all copy from the brief in one place).
 - Pages: `src/pages/` (`Home`, `Contact`, `NotFound`); form `src/components/BriefForm.tsx`;
   mascot `src/components/Mascot.tsx`.
+- Cursor: `src/lib/routeCursor.ts` (mounted from `src/mount.tsx`) and `src/styles/cursor.css`.
 - Phone-only pieces: `ThumbCta.tsx` (thumb button), `StarMap.tsx` (static constellation),
   `public/hero-sphere.webp` (low-power still). Phone and tablet module variants live beside their
   desktop versions in the same file (`ManifestoList`, `ProjectIndex`, `ProcessTimeline`, the wheel in

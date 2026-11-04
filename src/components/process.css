@@ -137,6 +137,18 @@ circle.sa-draw {
 .ptl__step.is-on .sa-dot {
   transform: none;
 }
+/* The staircase art is drawn until the page is scrolled (see lib/motion); only then does each
+   card wait to be scrolled into view and draw itself once. */
+html:not(.is-armed) .pcard .sa-draw {
+  stroke-dashoffset: 0;
+}
+html:not(.is-armed) .pcard circle.sa-draw {
+  opacity: 1;
+  transform: none;
+}
+html:not(.is-armed) .pcard .sa-dot {
+  transform: none;
+}
 
 
 /* Phones and tablets: the route timeline (ProcessTimeline). */
