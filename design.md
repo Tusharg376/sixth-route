@@ -196,7 +196,10 @@ Signature animations (desktop; on phones and tablets several take a different fo
    (a thin timer ring shows it). Pauses only while the pointer is over the dial or its legend;
    arrow keys work.
 5. **Process:** four orange cards in a staircase. Each is `position: sticky` and locks into a row as
-   you scroll (the marketinglab.framer.ai pattern).
+   you scroll (the marketinglab.framer.ai pattern). The header stays pinned above them while the
+   window is tall enough for it and a whole card; on a shorter one (below about 800px, such as a
+   Windows laptop with browser bars and 125% scaling) it scrolls away and the cards lock just
+   under the nav at full height, so they are never cut off at the bottom (`ProcessStaircase`).
 6. **Footer:** columns fade up in a left-to-right stagger, and the giant `SIXTHROUTE` wordmark
    rises from behind the bottom edge with an orange-to-night gradient.
 7. **Page changes:** every page paints night first (inline style in each HTML file) and
@@ -220,6 +223,13 @@ scroll-scrubbing.
   and the process route.
 - Not covered, because they are controls rather than entrances: the hero sphere's scroll turn, the
   projects row and its preview, the dial, and the nav and thumb-CTA states.
+
+**Pinned scroll budget.** A pinned scene costs scroll the visitor has to cover, so each is kept
+short. The Manifesto is 44svh per beat plus one screen (40svh on tablets), the name story is
+200svh (170svh on tablets), and the Process staircase starts each card 0.6 of a card below the last
+(`--step`) with a 24svh hold at the end. That brings the home page from about 23 screens to about
+19 on desktop. The scrub maps the same animation onto less scroll, so when a scene's length
+changes, check that its beats still read at the new pace.
 
 ## 8. Voice & copy
 
@@ -255,6 +265,10 @@ In-page anchors from other pages go to `/#section`; arriving with a hash skips t
 - Fields: cream input fill, 12px radius, orange focus ring `0 0 0 4px rgba(255,130,33,.18)`.
   Choices are pill chips (night fill + orange dot when selected). Errors are maroon, specific and
   calm ("Enter an email address like name@company.com.").
+- **Four boxes in a 2×2 grid:** name and work email, then business or website and phone number
+  (stacked on phones). The phone number is optional and carries one short line under it ("Helps us
+  reach you faster. We'll never spam you, we promise."). It is checked only when filled in (7–15
+  digits, optional leading "+") and reaches the team in the brief email as `Phone:`.
 - Submit: posts JSON to `VITE_FORM_ENDPOINT` when set; otherwise opens the visitor's email app
   with the brief pre-filled, and says so honestly in the success state.
 
@@ -337,6 +351,9 @@ changes *layout* stays in CSS.
 Full-screen night sheet: numbered links `01`–`06` (Montserrat 700, line-height 1.15), the orange
 CTA, then the email and social pills.
 
+- On phones the social links are round 44px icon buttons (Instagram, LinkedIn, Behance, X, WhatsApp) here, in
+  the footer and on the contact page. The name stays as the accessible name and tooltip; tablets and
+  desktop keep the names, and a network with no glyph keeps its text (`SocialLink`, `lib/social.ts`).
 - The links start right under the bar. The contact row (email, socials) drops to the bottom of the
   screen when there's room (`margin-top: auto` on that row), and the sheet scrolls when there isn't.
 - Never bottom-align the whole sheet with `justify-content: flex-end`. On real phones the browser's
@@ -364,9 +381,9 @@ CTA, then the email and social pills.
 | Sixthroute difference | Three rows with the icon on the left and hairline dividers, no boxes. The background is a static SVG star map (`StarMap`); the WebGL constellation isn't loaded on phones. | Three columns on tablets. |
 | Process | **The route timeline.** One orange line runs down the page and draws with the scroll (its head rides the 62% line); each step's node lights as the line reaches it, and its step art draws in, redrawn for night (orange route, cream points). | Tablets get the timeline too, with larger art. |
 | Proof | Slim rows (icon, title, two-line description, arrow) with dividers, no card boxes. | Two columns on tablets. |
-| FAQ | A two-line heading (the accent sentence becomes a smaller line under it). The first four questions show, then "Show all 8 questions"; the rest stay in the page. "Ask us directly" comes after the list. One answer is open at a time. | Single column. |
+| FAQ | A two-line heading (the accent sentence becomes a smaller line under it). The first four questions show, then "Show all 8 questions"; the rest stay in the page. "Ask us directly" comes after the list. One answer is open at a time, and all start closed (desktop and tablets open the first). | Single column. |
 | Final CTA | Unchanged. The ribbon field ignores the pointer on touch screens. | Same. |
-| Footer | Link groups as closed accordions (52px headers, orange "+"), Social as a row of pills. The rising wordmark stays. | Three columns on tablets. |
+| Footer | Link groups as closed accordions (52px headers, orange "+"), Social as a row of round icon buttons. The rising wordmark stays. | Three columns on tablets. |
 | Contact | "What happens next" becomes a three-step strip in the hero, just above the form; the full list is dropped. The "Send brief" bar is described above. Fields carry `autocomplete`, `inputmode` and "next" keyboard hints. | Same as desktop. |
 | 404 | The mascot's eyes follow the last tap and glance somewhere new after a few quiet seconds. | Same. |
 

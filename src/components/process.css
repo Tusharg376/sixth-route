@@ -8,8 +8,13 @@
 }
 .process__stage {
   --stick: 320px;
+  /* Room the header takes above the first card. Set from its height in Process.tsx. */
+  --lead: calc(var(--stick) - 96px);
   --card-h: clamp(380px, calc(100svh - var(--stick) - 28px), 470px);
-  --hold: 38svh;
+  /* How far each column starts below the last: a share of a card, so the cards rise in quick
+     succession and the section isn't mostly scroll. */
+  --step: calc(var(--card-h) * 0.6);
+  --hold: 24svh;
   position: relative;
 }
 .process__rail {
@@ -25,9 +30,14 @@
 .process__head .eyebrow {
   color: var(--muted-dark);
 }
+/* Short screens (set in Process.tsx): no room to pin the header above a whole card, so it scrolls
+   away and the cards lock near the top instead. */
+.process__stage.is-short .process__head {
+  position: static;
+}
 .process__track {
   position: relative;
-  padding-top: calc(var(--stick) - 96px) !important;
+  padding-top: var(--lead) !important;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
@@ -36,7 +46,7 @@
   list-style: none;
 }
 .process__col {
-  padding-top: calc(var(--i) * var(--card-h));
+  padding-top: calc(var(--i) * var(--step));
 }
 /* Hold space lives in the content box (sticky ignores padding) so all four rest in a row. */
 .process__col::after {

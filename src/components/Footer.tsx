@@ -5,6 +5,7 @@ import { gsap, prefersReducedMotion, scrubOnce, useArmed } from "../lib/motion";
 import { to } from "../lib/links";
 import { PHONE, useMedia } from "../lib/media";
 import { ArrowUpRight } from "./Icon";
+import { SocialLink } from "./SocialLink";
 import "./footer.css";
 
 const YEAR = new Date().getFullYear();
@@ -75,7 +76,11 @@ export function Footer() {
             phone ? (
               col.title === "Social" ? (
                 <ul key={col.title} className="footer__social" aria-label={col.title}>
-                  <Links links={col.links} />
+                  {col.links.map((l) => (
+                    <li key={l.label}>
+                      <SocialLink label={l.label} href={l.href} />
+                    </li>
+                  ))}
                 </ul>
               ) : (
                 <details key={col.title} className="footer__col footer__acc">

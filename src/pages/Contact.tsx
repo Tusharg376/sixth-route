@@ -1,7 +1,7 @@
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { BriefForm } from "../components/BriefForm";
-import { ArrowUpRight } from "../components/Icon";
+import { SocialLink } from "../components/SocialLink";
 import { CONTACT_PAGE, EMAIL, SOCIAL } from "../content";
 import { useReveal, useSmoothScroll } from "../lib/motion";
 import "./contact.css";
@@ -77,9 +77,7 @@ export default function Contact() {
                 <ul className="ct-social">
                   {SOCIAL.map((l) => (
                     <li key={l.label}>
-                      <a href={l.href} target="_blank" rel="noreferrer">
-                        {l.label} <ArrowUpRight size={12} />
-                      </a>
+                      <SocialLink label={l.label} href={l.href} arrow={12} />
                     </li>
                   ))}
                 </ul>

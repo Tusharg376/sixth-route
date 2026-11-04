@@ -372,6 +372,16 @@ h4 {
   transition: none;
 }
 
+/* Social links drawn as an icon (phones; SocialLink.tsx): a round 44px target, glyph centred.
+   The attribute selector outranks the pill styles each list gives its links. */
+a.social-link[data-icon] {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  gap: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

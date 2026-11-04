@@ -245,7 +245,7 @@ function ManifestoScene() {
         .to(q(".mf-finale > *"), { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.3 }, f + 0.1)
         .to(lines[lines.length - 1], { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, f + 0.3)
         .to(q(".mf-endmark"), { scale: 1, duration: 0.2, ease: "back.out(2)" }, f + 0.66)
-        .to({}, { duration: 0.6 });
+        .to({}, { duration: 0.3 });
       scrubOnce(tl, { trigger: el, start: "top 60%", end: "bottom bottom" }, 0.7);
     }, el);
     return () => ctx.revert();

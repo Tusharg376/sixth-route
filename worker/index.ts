@@ -76,6 +76,7 @@ export async function handleRequest(request: Request, env: Env, sendEmail: typeo
   const lines = [
     "A new brief has arrived at Sixth Route.", "",
     `Name: ${brief.name}`, `Email: ${brief.email}`,
+    `Phone: ${brief.phone || "Not provided"}`,
     `Business / website: ${brief.company || "Not provided"}`,
     `Services: ${brief.services.join(", ") || "Let’s discuss"}`,
     `Timeline: ${brief.timeline || "Let’s discuss"}`,

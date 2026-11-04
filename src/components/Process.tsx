@@ -110,19 +110,34 @@ function ProcessTimeline() {
   );
 }
 
+/** The shortest a card can be before its text is clipped (the card's own padding included). */
+const CARD_FIT = 430;
+/** Air kept under the locked cards, and where they lock when the header lets go (under the nav). */
+const CARD_BOTTOM_GAP = 28;
+const STICK_SHORT = 104;
+
 /** Desktop: the sticky staircase of cards. */
 function ProcessStaircase() {
   const stage = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLElement>(null);
 
-  // Cards lock just below the sticky header, whatever height the header wraps to.
+  // Cards lock just below the sticky header, whatever height the header wraps to. On a screen too
+  // short to hold the header and a whole card (a Windows laptop's window, say) the header lets go
+  // instead and the cards lock near the top, so they are never cut off at the bottom.
   useEffect(() => {
     const s = stage.current!;
     const h = head.current!;
-    const set = () => s.style.setProperty("--stick", `${h.offsetHeight + 116}px`);
+    const set = () => {
+      const pinned = h.offsetHeight + 116;
+      const short = window.innerHeight - pinned - CARD_BOTTOM_GAP < CARD_FIT;
+      s.classList.toggle("is-short", short);
+      s.style.setProperty("--lead", `${h.offsetHeight + 20}px`);
+      s.style.setProperty("--stick", `${short ? STICK_SHORT : pinned}px`);
+    };
     set();
     const ro = new ResizeObserver(set);
     ro.observe(h);
+    window.addEventListener("resize", set);
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("is-in")),
       { threshold: 0.75 },
@@ -131,6 +146,7 @@ function ProcessStaircase() {
     return () => {
       ro.disconnect();
       io.disconnect();
+      window.removeEventListener("resize", set);
     };
   }, []);
 

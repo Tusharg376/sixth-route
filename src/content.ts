@@ -13,7 +13,7 @@ export const NAV_LINKS = [
 export const CONTACT_HREF = "/contact/";
 /** The standing call to action (nav button, phone thumb button). */
 export const START_PROJECT = { label: "Start a Project", href: CONTACT_HREF };
-export const EMAIL = "hello@sixthroute.com"; // TODO: confirm the professional email address.
+export const EMAIL = "contact@sixthroute.com";
 
 export const HERO = {
   eyebrow: "Creative · Strategy · Technology",
@@ -323,6 +323,8 @@ export const FOOTER = {
         { label: "LinkedIn", href: "https://linkedin.com/" },
         { label: "Behance", href: "https://behance.net/" },
         { label: "X", href: "https://x.com/" },
+        // wa.me wants the country code and the number, digits only (91 = India).
+        { label: "WhatsApp", href: "https://wa.me/916280572363" },
       ],
     },
   ],

@@ -103,6 +103,7 @@ Process (sticky staircase) · The Work Speaks for Itself · FAQ · Final CTA (Th
   The first card (the Sixth Route identity) is the studio's own work; the rest are labelled
   "Self-initiated concept" as the brief requires.
 - Confirm the "Why Sixth Route" name story copy with the client.
-- Confirm the public contact email (`EMAIL`), social profile URLs, and Resend delivery settings.
+- Confirm the social profile URLs and Resend delivery settings. The public contact email is
+  `EMAIL` in content.ts (`contact@sixthroute.com`).
 - Build the Privacy Policy and Terms of Service pages (footer links point at `/privacy`, `/terms`).
 - Fonts load from Google Fonts; self-host them if offline/privacy requirements apply.

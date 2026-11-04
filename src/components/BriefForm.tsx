@@ -58,13 +58,13 @@ export function BriefForm() {
     set("services", v.services.includes(s) ? v.services.filter((x) => x !== s) : [...v.services, s]);
 
   // The form is its own route: each part lights its stretch of line once it's complete.
-  const done = [!check.name(v) && !check.email(v), !check.message(v)];
+  const done = [!check.name(v) && !check.email(v) && !check.phone(v), !check.message(v)];
   const group = (i: number) => `brief__group ${done[i] ? "is-done" : ""}`;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (submitting.current) return;
-    setTouched({ name: true, email: true, message: true });
+    setTouched({ name: true, email: true, phone: true, message: true });
     const firstBad = (Object.keys(check) as Checked[]).find((k) => check[k](v));
     if (firstBad) {
       const field = document.getElementById(`${id}-${firstBad}`);
@@ -75,6 +75,7 @@ export function BriefForm() {
     const brief = {
       name: v.name.trim(),
       email: v.email.trim(),
+      phone: v.phone.trim(),
       company: v.company.trim(),
       services: v.services,
       timeline: v.timeline,
@@ -188,18 +189,44 @@ export function BriefForm() {
             />
           </Field>
         </div>
-        <Field id={`${id}-company`} label="Business or website" hint="Optional">
-          <input
-            id={`${id}-company`}
-            name="company"
-            autoComplete="organization"
-            enterKeyHint="next"
-            value={v.company}
-            maxLength={BRIEF_LIMITS.company}
-            disabled={status === "sending"}
-            onChange={(e) => set("company", e.target.value)}
-          />
-        </Field>
+        <div className="brief__row">
+          <Field id={`${id}-company`} label="Business or website" hint="Optional">
+            <input
+              id={`${id}-company`}
+              name="company"
+              autoComplete="organization"
+              enterKeyHint="next"
+              value={v.company}
+              maxLength={BRIEF_LIMITS.company}
+              disabled={status === "sending"}
+              onChange={(e) => set("company", e.target.value)}
+            />
+          </Field>
+          <Field
+            id={`${id}-phone`}
+            label="Phone number"
+            hint="Optional"
+            error={err("phone")}
+            help="Helps us reach you faster. We’ll never spam you, we promise."
+          >
+            <input
+              id={`${id}-phone`}
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              enterKeyHint="next"
+              placeholder="+91 98765 43210"
+              value={v.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+              aria-invalid={!!err("phone")}
+              aria-describedby={[err("phone") ? `${id}-phone-err` : "", `${id}-phone-help`].filter(Boolean).join(" ")}
+              maxLength={BRIEF_LIMITS.phone}
+              disabled={status === "sending"}
+            />
+          </Field>
+        </div>
       </fieldset>
 
       <fieldset className={group(1)}>
@@ -285,7 +312,7 @@ export function BriefForm() {
   );
 }
 
-function Field({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string; children: React.ReactNode }) {
+function Field({ id, label, hint, error, help, children }: { id: string; label: string; hint?: string; error?: string; help?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className={`field ${error ? "has-error" : ""}`}>
       <label htmlFor={id}>
@@ -296,6 +323,11 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
         <p id={`${id}-err`} className="field__error" aria-live="polite">
           {error}
         </p>
+      )}
+      {help && (
+        <div id={`${id}-help`} className="field__help">
+          {help}
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 /* Manifesto as a pinned sequence of reroutes (Figma "Writing" copy). */
 .mf2 {
   position: relative;
-  height: calc(var(--beats) * 72svh + 100svh);
+  height: calc(var(--beats) * 44svh + 100svh);
   background: var(--sr-night);
   color: var(--sr-white);
 }
@@ -173,7 +173,7 @@
 
 @media (max-width: 1024px) {
   .mf2 {
-    height: calc(var(--beats) * 64svh + 100svh);
+    height: calc(var(--beats) * 40svh + 100svh);
   }
   .mf-pairs {
     top: 44%;

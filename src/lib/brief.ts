@@ -3,15 +3,18 @@ import { CAPABILITIES, CONTACT_PAGE } from "../content.ts";
 export type BriefValues = {
   name: string;
   email: string;
+  phone: string;
   company: string;
   services: string[];
   timeline: string;
   message: string;
 };
 
-export const BRIEF_LIMITS = { name: 120, email: 254, company: 240, message: 10000 };
-export const EMPTY_BRIEF: BriefValues = { name: "", email: "", company: "", services: [], timeline: "", message: "" };
+export const BRIEF_LIMITS = { name: 120, email: 254, phone: 30, company: 240, message: 10000 };
+export const EMPTY_BRIEF: BriefValues = { name: "", email: "", phone: "", company: "", services: [], timeline: "", message: "" };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/** Digits with the usual separators and an optional leading "+": "+91 98765 43210", "(020) 7946-0958". */
+const PHONE_RE = /^\+?[0-9 ().-]+$/;
 const SINGLE_LINE = /^[^\u0000-\u001f\u007f]*$/;
 
 export const checkBrief = {
@@ -21,6 +24,14 @@ export const checkBrief = {
   email: (v: BriefValues) =>
     v.email.length <= BRIEF_LIMITS.email && EMAIL_RE.test(v.email.trim())
       ? "" : "Where can we reach you? Add a complete email address, like you@company.com.",
+  // Optional: empty is fine. Between 7 and 15 digits (the international maximum), nothing else.
+  phone: (v: BriefValues) => {
+    const phone = v.phone.trim();
+    if (!phone) return "";
+    const digits = phone.replace(/\D/g, "").length;
+    return phone.length <= BRIEF_LIMITS.phone && PHONE_RE.test(phone) && digits >= 7 && digits <= 15
+      ? "" : "That number doesn’t look quite right. Add the digits with your country code, like +91 98765 43210, or leave it blank.";
+  },
   message: (v: BriefValues) => {
     if (v.message.trim().length < 10) {
       return "Give us a little more to work with. Tell us what you’d like to create, change, or solve so we can understand your brief.";
@@ -36,6 +47,7 @@ export function parseBrief(value: unknown): { brief: BriefValues; errors: Partia
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const data = value as Record<string, unknown>;
   if (!["name", "email", "message"].every((key) => typeof data[key] === "string")) return null;
+  if (data.phone !== undefined && typeof data.phone !== "string") return null;
   if (data.company !== undefined && typeof data.company !== "string") return null;
   if (data.timeline !== undefined && typeof data.timeline !== "string") return null;
   if (data.services !== undefined && (!Array.isArray(data.services) || data.services.length > CAPABILITIES.length)) return null;
@@ -44,6 +56,7 @@ export function parseBrief(value: unknown): { brief: BriefValues; errors: Partia
   const brief: BriefValues = {
     name: (data.name as string).trim(),
     email: (data.email as string).trim(),
+    phone: ((data.phone ?? "") as string).trim(),
     company: ((data.company ?? "") as string).trim(),
     timeline: ((data.timeline ?? "") as string).trim(),
     services: [...new Set(services as string[])],
