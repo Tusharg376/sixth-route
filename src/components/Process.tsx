@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { PROCESS, PROCESS_HEAD } from "../content";
 import { COMPACT, useMedia } from "../lib/media";
-import { gsap, prefersReducedMotion } from "../lib/motion";
+import { gsap, prefersReducedMotion, scrubOnce, ScrollTrigger, useArmed } from "../lib/motion";
 import "./process.css";
 
 // The same six points appear on every card; each step does more with them, so the four cards
@@ -48,6 +48,7 @@ export function Process() {
  */
 function ProcessTimeline() {
   const list = useRef<HTMLOListElement>(null);
+  const armed = useArmed();
 
   useEffect(() => {
     const el = list.current!;
@@ -58,29 +59,28 @@ function ProcessTimeline() {
     setTail();
     const ro = new ResizeObserver(setTail);
     ro.observe(el);
-    if (prefersReducedMotion()) {
+    // Until the page is scrolled (and for reduced motion) the route is shown fully drawn and lit.
+    if (prefersReducedMotion() || !armed) {
       el.style.setProperty("--p", "1");
       steps.forEach((s) => s.classList.add("is-on"));
-      return () => ro.disconnect();
+      return () => {
+        ro.disconnect();
+        el.style.removeProperty("--p");
+        steps.forEach((s) => s.classList.remove("is-on"));
+      };
     }
     const ctx = gsap.context(() => {
       // The line's head rides the 62% line of the screen; a node lights the moment it arrives.
-      gsap.fromTo(
-        el,
-        { "--p": 0 },
-        { "--p": 1, ease: "none", scrollTrigger: { trigger: el, start: "top+=12 62%", end: () => `bottom-=${tail()} 62%`, scrub: 0.3, invalidateOnRefresh: true } },
-      );
-      steps.forEach((s) =>
-        gsap.timeline({
-          scrollTrigger: { trigger: s, start: "top+=12 62%", onEnter: () => s.classList.add("is-on"), onLeaveBack: () => s.classList.remove("is-on") },
-        }),
-      );
+      // Both only ever go forward: scrolling back up leaves the route as drawn.
+      const line = gsap.fromTo(el, { "--p": 0 }, { "--p": 1, ease: "none", paused: true });
+      scrubOnce(line, { trigger: el, start: "top+=12 62%", end: () => `bottom-=${tail()} 62%`, invalidateOnRefresh: true }, 0.3);
+      steps.forEach((s) => ScrollTrigger.create({ trigger: s, start: "top+=12 62%", onEnter: () => s.classList.add("is-on") }));
     }, el);
     return () => {
       ctx.revert();
       ro.disconnect();
     };
-  }, []);
+  }, [armed]);
 
   return (
     <section className="process process--timeline on-dark" data-nav="dark" aria-labelledby="process-title">

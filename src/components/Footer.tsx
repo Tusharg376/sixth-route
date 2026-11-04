@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Lockup } from "../brand/Logo";
 import { FOOTER } from "../content";
-import { gsap, prefersReducedMotion } from "../lib/motion";
+import { gsap, prefersReducedMotion, scrubOnce, useArmed } from "../lib/motion";
 import { to } from "../lib/links";
 import { PHONE, useMedia } from "../lib/media";
 import { ArrowUpRight } from "./Icon";
@@ -27,6 +27,7 @@ function Links({ links }: { links: Link[] }) {
 
 export function Footer() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed();
   // Phones fold the link columns into accordions and turn Social into a row of pills.
   const phone = useMedia(PHONE);
   const word = useRef<HTMLSpanElement>(null);
@@ -51,20 +52,13 @@ export function Footer() {
 
   // The giant wordmark rises from behind the bottom edge as the footer scrolls in.
   useEffect(() => {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || !armed) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        word.current,
-        { yPercent: 62 },
-        {
-          yPercent: 0,
-          ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top 85%", end: "bottom bottom", scrub: 0.6 },
-        },
-      );
+      const rise = gsap.fromTo(word.current, { yPercent: 62 }, { yPercent: 0, ease: "none", paused: true });
+      scrubOnce(rise, { trigger: root.current!, start: "top 85%", end: "bottom bottom" });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }, [armed]);
 
   return (
     <footer className="footer on-dark" data-nav="dark" ref={root}>

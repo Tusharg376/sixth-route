@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { HERO, INTRO, NAME_STORY } from "../content";
 import { Mark } from "../brand/Logo";
 import { LANDSCAPE_PHONE, PHONE, useMedia } from "../lib/media";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "../lib/motion";
+import { gsap, ScrollTrigger, prefersReducedMotion, scrubOnce, useArmed } from "../lib/motion";
 import { ArrowRight } from "./Icon";
 import "./intro.css";
 
@@ -55,13 +55,15 @@ function NameStory() {
   const phone = useMedia(PHONE);
   // A phone on its side is too short to pin: the map is simply shown, fully drawn.
   const flat = useMedia(LANDSCAPE_PHONE);
+  // Until the page is scrolled the map is shown fully drawn, like on a phone on its side.
+  const armed = useArmed();
   const map = phone ? PORTRAIT : LANDSCAPE;
   const { origin, crowd, dest } = map;
 
   useEffect(() => {
     const el = root.current!;
     const q = gsap.utils.selector(el);
-    if (prefersReducedMotion() || flat) return;
+    if (prefersReducedMotion() || flat || !armed) return;
     const { dest } = phone ? PORTRAIT : LANDSCAPE;
     const ctx = gsap.context(() => {
       // Grey routes draw by real length (no zero-length caps left behind at their ends).
@@ -75,12 +77,7 @@ function NameStory() {
       // The copy is already there as the section arrives; the map starts drawing while the
       // section is still scrolling in, then keeps going once it pins. Phones don't pin: the map
       // draws downward as it scrolls up the screen, so the drawing stays in view.
-      const tl = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: phone
-          ? { trigger: q(".ns__map")[0], start: "top 72%", end: "bottom 88%", scrub: 0.6 }
-          : { trigger: el, start: "top 55%", end: "bottom bottom", scrub: 0.6 },
-      });
+      const tl = gsap.timeline({ defaults: { ease: "none" }, paused: true });
       tl.to(greys, { strokeDashoffset: 0, stagger: 0.04, duration: 0.2 }, 0)
         .to(q(".ns-label"), { opacity: 1, stagger: 0.04, duration: 0.06 }, 0.08)
         .to(q(".ns-crowd"), { opacity: 1, duration: 0.08 }, 0.3)
@@ -94,7 +91,6 @@ function NameStory() {
       // so the line always ends exactly under the dot.
       const len = path.getTotalLength();
       path.style.strokeDasharray = `${len} ${len + 2}`;
-      const st = tl.scrollTrigger!;
       const follow = () => {
         const p = gsap.utils.clamp(0, 1, (tl.time() - 0.44) / 0.4);
         path.style.strokeDashoffset = String(len * (1 - p) + (p === 0 ? 1 : 0));
@@ -106,6 +102,12 @@ function NameStory() {
       };
       follow();
       tl.eventCallback("onUpdate", follow);
+      const st = scrubOnce(
+        tl,
+        phone
+          ? { trigger: q(".ns__map")[0], start: "top 72%", end: "bottom 88%" }
+          : { trigger: el, start: "top 55%", end: "bottom bottom" },
+      );
       ScrollTrigger.addEventListener("refresh", follow);
       return () => {
         st.kill();
@@ -113,7 +115,7 @@ function NameStory() {
       };
     }, el);
     return () => ctx.revert();
-  }, [phone, flat]);
+  }, [phone, flat, armed]);
 
   return (
     <div className="ns" ref={root}>

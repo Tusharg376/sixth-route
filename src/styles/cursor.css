@@ -1,0 +1,59 @@
+/* Route-trail cursor (src/lib/routeCursor.ts, design.md → Cursor). Only a mouse that can hover gets it. */
+@media (hover: hover) and (pointer: fine) {
+  .route-cursor__trail {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 300;
+    pointer-events: none;
+  }
+
+  .route-cursor__head {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 301;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--sr-orange);
+    /* The hairline keeps the head readable on orange surfaces. */
+    box-shadow:
+      inset 0 0 0 2px var(--sr-orange),
+      0 0 0 1px rgba(var(--sr-night-rgb), 0.4);
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      width var(--dur-fast) var(--ease-out),
+      height var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      opacity 120ms linear;
+  }
+  html.route-cursor .route-cursor__head {
+    opacity: 1;
+  }
+  html.route-cursor .route-cursor__head.is-away,
+  html.route-cursor .route-cursor__head.is-hidden {
+    opacity: 0;
+  }
+  .route-cursor__head.is-active {
+    width: 28px;
+    height: 28px;
+    background-color: rgba(var(--sr-orange-rgb), 0.22);
+  }
+  .route-cursor__head.is-down {
+    width: 9px;
+    height: 9px;
+  }
+  .route-cursor__head.is-active.is-down {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* The head replaces the system cursor everywhere except over text entry. */
+  html.route-cursor:not(.route-cursor--native),
+  html.route-cursor:not(.route-cursor--native) * {
+    cursor: none !important;
+  }
+}

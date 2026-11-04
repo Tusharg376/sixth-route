@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MANIFESTO, MANIFESTO_SCENE as M } from "../content";
 import { Mark } from "../brand/Logo";
-import { gsap, prefersReducedMotion } from "../lib/motion";
+import { gsap, prefersReducedMotion, scrubOnce, ScrollTrigger, useArmed } from "../lib/motion";
 import { LANDSCAPE_PHONE, PHONE, useMedia } from "../lib/media";
 import "./manifesto.css";
 
@@ -49,6 +49,7 @@ function boxIn(root: HTMLElement, el: Element | null): Box {
  */
 function ManifestoList() {
   const root = useRef<HTMLElement>(null);
+  const armed = useArmed();
   const [paths, setPaths] = useState<{ rows: string[]; future: string; end: { x: number; y: number } } | null>(null);
 
   useLayoutEffect(() => {
@@ -70,8 +71,9 @@ function ManifestoList() {
     return () => ro.disconnect();
   }, []);
 
+  // Until the page is scrolled the list simply shows everything, finished (see lib/motion).
   useEffect(() => {
-    if (!paths) return;
+    if (!paths || !armed) return;
     const el = root.current!;
     const q = gsap.utils.selector(el);
     const ctx = gsap.context(() => {
@@ -81,20 +83,22 @@ function ManifestoList() {
       });
       (q(".mf-row") as HTMLElement[]).forEach((row) => {
         const rq = gsap.utils.selector(row);
-        gsap
-          .timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: row, start: "top 84%", end: "top 46%", scrub: 0.6 } })
+        const tl = gsap
+          .timeline({ defaults: { ease: "power2.out" }, paused: true })
           .from(rq(".mf-from"), { yPercent: 60, opacity: 0, duration: 0.3 }, 0)
           .to(rq(".mf-line"), { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 0.2)
           .from(rq(".mf-to"), { yPercent: 60, opacity: 0, duration: 0.3 }, 0.55);
+        scrubOnce(tl, { trigger: row, start: "top 84%", end: "top 46%" });
       });
-      gsap
-        .timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: q(".mfl__finale")[0], start: "top 82%", end: "top 30%", scrub: 0.6 } })
+      const finale = gsap
+        .timeline({ defaults: { ease: "power2.out" }, paused: true })
         .from(q(".mfl__finale > p"), { y: 34, opacity: 0, stagger: 0.12, duration: 0.3 }, 0)
         .to(q(".mfl__future-line"), { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 0.25)
         .from(q(".mf-endmark"), { scale: 0, transformOrigin: "50% 50%", duration: 0.2, ease: "back.out(2)" }, 0.6);
+      scrubOnce(finale, { trigger: q(".mfl__finale")[0], start: "top 82%", end: "top 30%" });
     }, el);
     return () => ctx.revert();
-  }, [paths]);
+  }, [paths, armed]);
 
   return (
     <section className="mf2 mfl on-dark" data-nav="dark" ref={root} aria-label="Manifesto">
@@ -153,7 +157,15 @@ function ManifestoScene() {
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [paths, setPaths] = useState<{ pairs: string[]; future: string; end: { x: number; y: number } } | null>(null);
-  const reduced = prefersReducedMotion();
+  // The pinned scene is tall and empty until it plays, so until the page is scrolled (and for
+  // reduced motion) the manifesto is shown as plain lines instead: all of it, nothing hidden.
+  const armed = useArmed();
+  const reduced = prefersReducedMotion() || !armed;
+
+  // The scene is far taller than the lines: re-measure every scroll trigger below it.
+  useLayoutEffect(() => {
+    if (!reduced) ScrollTrigger.refresh();
+  }, [reduced]);
 
   // Measure word boxes and build each pair's route (on load, font swap and resize).
   useLayoutEffect(() => {
@@ -203,13 +215,20 @@ function ManifestoScene() {
       gsap.set(q(".mf-finale > *"), { autoAlpha: 0, y: 40 });
       gsap.set(q(".mf-endmark"), { scale: 0, transformOrigin: "50% 50%" });
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.out" },
-        scrollTrigger: { trigger: el, start: "top top", end: "bottom bottom", scrub: 0.7 },
-      });
-      tl.from(q(".mf-q span"), { yPercent: 100, opacity: 0, stagger: 0.08, duration: 0.35 }, 0);
+      // The scene never opens on a blank screen: the question comes up as the section slides in
+      // (from 25% on screen) and the first pair is already drawing by the time it pins.
+      const intro = gsap
+        .timeline({ defaults: { ease: "power2.out" }, paused: true })
+        .from(q(".mf-eyebrow, .mf-count"), { opacity: 0, duration: 0.3 }, 0)
+        .from(q(".mf-q span"), { yPercent: 100, opacity: 0, stagger: 0.08, duration: 0.35 }, 0);
+      scrubOnce(intro, { trigger: el, start: "top 75%", end: "top 25%" }, 0.7);
+
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" }, paused: true });
+      // The first pair builds during the slide-in (about 0.7 of a beat before the section pins),
+      // so it lands as the scene locks in.
+      const lead = 0.25;
       M.pairs.forEach((_, i) => {
-        const t = 0.4 + i;
+        const t = lead + i;
         const pair = q(".mf-pair")[i];
         const pq = gsap.utils.selector(pair);
         const line = lines[i];
@@ -221,12 +240,13 @@ function ManifestoScene() {
           .to(pair, { autoAlpha: 0, yPercent: -18, duration: 0.18, ease: "power2.in" }, t + 0.8)
           .to(line, { opacity: 0, duration: 0.14 }, t + 0.8);
       });
-      const f = 0.4 + M.pairs.length;
+      const f = lead + M.pairs.length;
       tl.to(q(".mf-top"), { autoAlpha: 0, y: -30, duration: 0.25 }, f)
         .to(q(".mf-finale > *"), { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.3 }, f + 0.1)
         .to(lines[lines.length - 1], { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, f + 0.3)
         .to(q(".mf-endmark"), { scale: 1, duration: 0.2, ease: "back.out(2)" }, f + 0.66)
         .to({}, { duration: 0.6 });
+      scrubOnce(tl, { trigger: el, start: "top 60%", end: "bottom bottom" }, 0.7);
     }, el);
     return () => ctx.revert();
   }, [paths, reduced]);

@@ -359,16 +359,17 @@ h4 {
   }
 }
 
-/* Generic reveal: elements with [data-reveal] fade up when they enter the viewport. */
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(28px);
+/* Generic reveal: [data-reveal] elements fade up once as they scroll into view, and stay.
+   They are visible by default; useReveal (src/lib/motion.ts) arms only the ones that are still
+   off screen, so a page that is never scrolled (a crawler, a full-page screenshot) shows everything. */
+[data-reveal].is-armed {
   transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
 }
-[data-reveal].is-in {
-  opacity: 1;
-  transform: none;
+[data-reveal].is-armed:not(.is-in) {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
