@@ -55,7 +55,7 @@
   background: var(--sr-cream);
 }
 .ns {
-  height: 280svh;
+  height: 200svh;
 }
 .ns__sticky {
   position: sticky;
@@ -191,7 +191,7 @@
 }
 @media (max-width: 1024px) {
   .ns {
-    height: 240svh;
+    height: 170svh;
   }
   .ns__sticky {
     grid-template-columns: 1fr;

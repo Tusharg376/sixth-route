@@ -4,7 +4,8 @@ import { EMAIL, NAV_LINKS, SOCIAL, START_PROJECT } from "../content";
 import { to } from "../lib/links";
 import { COMPACT, useMedia } from "../lib/media";
 import { getLenis } from "../lib/motion";
-import { ArrowRight, ArrowUpRight } from "./Icon";
+import { ArrowRight } from "./Icon";
+import { SocialLink } from "./SocialLink";
 import "./nav.css";
 
 type Cta = { label: string; href: string };
@@ -127,9 +128,7 @@ export function Nav({ ready, cta = START_PROJECT }: { ready: boolean; cta?: Cta 
           <ul className="nav__social" aria-label="Social">
             {SOCIAL.map((l) => (
               <li key={l.label}>
-                <a href={l.href} target="_blank" rel="noreferrer">
-                  {l.label} <ArrowUpRight size={11} />
-                </a>
+                <SocialLink label={l.label} href={l.href} />
               </li>
             ))}
           </ul>

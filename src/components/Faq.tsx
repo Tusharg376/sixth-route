@@ -1,10 +1,13 @@
 import { useId, useState } from "react";
 import { CONTACT_HREF, FAQ_HEAD, FAQS } from "../content";
+import { matches, PHONE } from "../lib/media";
 import { ArrowRight } from "./Icon";
 import "./faq.css";
 
 export function Faq() {
-  const [open, setOpen] = useState(0);
+  // The first answer starts open on desktop and tablets; on a phone every question starts closed,
+  // so the list opens as a short, scannable stack.
+  const [open, setOpen] = useState(() => (matches(PHONE) ? -1 : 0));
   const [all, setAll] = useState(false);
   const base = useId();
   return (

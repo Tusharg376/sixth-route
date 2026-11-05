@@ -1,4 +1,5 @@
 import type { IconName } from "../content";
+import type { SocialKey } from "../lib/social";
 
 // Brand iconography (Figma "Iconography" tile): geometric marks in orange + currentColor.
 const O = "var(--icon-accent, var(--sr-orange))";
@@ -82,6 +83,48 @@ export function ArrowRight() {
   return (
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M2 8h12M9 3l5 5-5 5" />
+    </svg>
+  );
+}
+
+/** Line glyphs for the social profiles, drawn like the arrows: 24 grid, 1.8 stroke, currentColor. */
+const SOCIAL_GLYPHS: Record<SocialKey, React.ReactNode> = {
+  instagram: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M17.2 6.8v.01" />
+    </>
+  ),
+  linkedin: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+      <path d="M8 11v5M8 8v.01M12 16v-5M16 16v-3a2 2 0 0 0-4 0" />
+    </>
+  ),
+  behance: (
+    <>
+      <path d="M3 18V6h4.5a3 3 0 0 1 0 6 3 3 0 0 1 0 6H3M3 12h4.5M14 13h7a3.5 3.5 0 0 0-7 0v2a3.5 3.5 0 0 0 6.64 1M16 6h3" />
+    </>
+  ),
+  x: (
+    <>
+      <path d="M4 4l11.73 16H20L8.27 4z" />
+      <path d="M4 20l6.77-6.77M13.23 10.77L20 4" />
+    </>
+  ),
+  whatsapp: (
+    <>
+      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+    </>
+  ),
+};
+
+export function SocialIcon({ name, size = 20 }: { name: SocialKey; size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {SOCIAL_GLYPHS[name]}
     </svg>
   );
 }

@@ -43,6 +43,28 @@ test("valid briefs go to the configured inbox, with reply-to and a stable retry 
   assert.equal(calls, 1);
 });
 
+test("the phone number is optional and, when given, reaches the inbox", async () => {
+  const sent: string[] = [];
+  const provider: typeof fetch = async (_url, init) => {
+    sent.push(JSON.parse(String(init?.body)).text);
+    return Response.json({ id: "accepted-email-id" });
+  };
+  assert.equal((await handleRequest(request(), env(), provider)).status, 200);
+  assert.equal((await handleRequest(request({ ...brief, phone: "  +91 98765 43210 " }), env(), provider)).status, 200);
+  assert.match(sent[0], /Phone: Not provided/);
+  assert.match(sent[1], /Phone: \+91 98765 43210/);
+});
+
+test("a phone number that isn't a phone number is rejected before reaching Resend", async () => {
+  for (const phone of ["call me", "12345", "+1234567890123456", "98765 43210; DROP", "+91\n98765 43210"]) {
+    const response = await handleRequest(request({ ...brief, phone }), env(), neverSend);
+    assert.equal(response.status, 422, phone);
+    const result = await response.json() as { errors: { phone: string } };
+    assert.match(result.errors.phone, /doesn’t look quite right/);
+  }
+  assert.equal((await handleRequest(request({ ...brief, phone: 9876543210 }), env(), neverSend)).status, 400);
+});
+
 test("short descriptions return the creative field error before reaching Resend", async () => {
   const response = await handleRequest(request({ ...brief, message: "Testing" }), env(), neverSend);
   assert.equal(response.status, 422);
