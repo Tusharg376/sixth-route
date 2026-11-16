@@ -2,7 +2,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { BriefForm } from "../components/BriefForm";
 import { ArrowUpRight } from "../components/Icon";
-import { CONTACT_PAGE, EMAIL, SOCIAL } from "../content";
+import { CONTACT_PAGE, EMAIL, PHONE_CONTACT, SOCIAL } from "../content";
 import { useReveal, useSmoothScroll } from "../lib/motion";
 import "./contact.css";
 
@@ -71,6 +71,19 @@ export default function Contact() {
                 <a className="ct-mail tap" href={`mailto:${EMAIL}`}>
                   {EMAIL}
                 </a>
+              </div>
+              <div className="ct-block" data-reveal style={{ ["--reveal-delay" as string]: "140ms" }}>
+                <p className="eyebrow">Call or WhatsApp</p>
+                <a className="ct-mail tap" href={PHONE_CONTACT.href}>
+                  {PHONE_CONTACT.display}
+                </a>
+                <ul className="ct-social">
+                  <li>
+                    <a href={PHONE_CONTACT.whatsappHref} target="_blank" rel="noreferrer">
+                      WhatsApp <ArrowUpRight size={12} />
+                    </a>
+                  </li>
+                </ul>
               </div>
               <div className="ct-block" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
                 <p className="eyebrow">Elsewhere</p>

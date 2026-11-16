@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Lockup } from "../brand/Logo";
-import { FOOTER } from "../content";
+import { FOOTER, PHONE_CONTACT } from "../content";
 import { gsap, prefersReducedMotion } from "../lib/motion";
 import { to } from "../lib/links";
 import { PHONE, useMedia } from "../lib/media";
@@ -73,6 +73,15 @@ export function Footer() {
           <div className="footer__brand" data-reveal>
             <Lockup tone="dark" />
             <p>{FOOTER.description}</p>
+          </div>
+          <div className="footer__col" data-reveal>
+            <p className="footer__h">Call or WhatsApp</p>
+            <ul>
+              <Links links={[
+                { label: PHONE_CONTACT.display, href: PHONE_CONTACT.href },
+                { label: "WhatsApp", href: PHONE_CONTACT.whatsappHref },
+              ]} />
+            </ul>
           </div>
         </div>
 
