@@ -89,6 +89,9 @@ export function ArrowRight() {
 
 /** Line glyphs for the social profiles, drawn like the arrows: 24 grid, 1.8 stroke, currentColor. */
 const SOCIAL_GLYPHS: Record<SocialKey, React.ReactNode> = {
+  facebook: (
+    <path d="M14 21v-8h3l.5-4H14V7c0-1 .5-2 2-2h2V1.5a22 22 0 0 0-3-.2c-3 0-5 1.8-5 5.2V9H7v4h3v8" />
+  ),
   instagram: (
     <>
       <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
@@ -102,9 +105,10 @@ const SOCIAL_GLYPHS: Record<SocialKey, React.ReactNode> = {
       <path d="M8 11v5M8 8v.01M12 16v-5M16 16v-3a2 2 0 0 0-4 0" />
     </>
   ),
-  behance: (
+  youtube: (
     <>
-      <path d="M3 18V6h4.5a3 3 0 0 1 0 6 3 3 0 0 1 0 6H3M3 12h4.5M14 13h7a3.5 3.5 0 0 0-7 0v2a3.5 3.5 0 0 0 6.64 1M16 6h3" />
+      <rect x="2" y="5" width="20" height="14" rx="4" />
+      <path d="m10 9 5 3-5 3z" />
     </>
   ),
   x: (

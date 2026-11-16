@@ -1,5 +1,5 @@
 /** Social networks that have a glyph in Icon.tsx's `SocialIcon`; any other keeps its text link. */
-export const SOCIAL_KEYS = ["instagram", "linkedin", "behance", "x", "whatsapp"] as const;
+export const SOCIAL_KEYS = ["facebook", "instagram", "linkedin", "youtube", "x", "whatsapp"] as const;
 export type SocialKey = (typeof SOCIAL_KEYS)[number];
 
 const isSocialKey = (key: string): key is SocialKey => (SOCIAL_KEYS as readonly string[]).includes(key);

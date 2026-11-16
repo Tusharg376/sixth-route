@@ -13,7 +13,12 @@ export const NAV_LINKS = [
 export const CONTACT_HREF = "/contact/";
 /** The standing call to action (nav button, phone thumb button). */
 export const START_PROJECT = { label: "Start a Project", href: CONTACT_HREF };
-export const EMAIL = "contact@sixthroute.com";
+export const EMAIL = "connect@sixthroute.com";
+export const PHONE_CONTACT = {
+  display: "+91 95305 52254",
+  href: "tel:+919530552254",
+  whatsappHref: "https://wa.me/919530552254",
+};
 
 export const HERO = {
   eyebrow: "Creative · Strategy · Technology",
@@ -317,14 +322,13 @@ export const FOOTER = {
     },
     {
       title: "Social",
-      // TODO: replace with the studio's verified profile URLs.
       links: [
-        { label: "Instagram", href: "https://instagram.com/" },
-        { label: "LinkedIn", href: "https://linkedin.com/" },
-        { label: "Behance", href: "https://behance.net/" },
-        { label: "X", href: "https://x.com/" },
-        // wa.me wants the country code and the number, digits only (91 = India).
-        { label: "WhatsApp", href: "https://wa.me/916280572363" },
+        { label: "Facebook", href: "https://www.facebook.com/thesixthroute/" },
+        { label: "LinkedIn", href: "https://www.linkedin.com/company/sixthroute" },
+        { label: "Instagram", href: "https://www.instagram.com/thesixthroute/" },
+        { label: "YouTube", href: "https://www.youtube.com/@Sixthroute" },
+        { label: "X", href: "https://x.com/thesixthroute" },
+        { label: "WhatsApp", href: PHONE_CONTACT.whatsappHref },
       ],
     },
   ],
